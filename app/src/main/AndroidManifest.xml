@@ -12,6 +12,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Do4E">
         <activity
+            android:name=".his.history"
+            android:exported="false" />
+        <activity
+            android:name=".ui.Home"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>

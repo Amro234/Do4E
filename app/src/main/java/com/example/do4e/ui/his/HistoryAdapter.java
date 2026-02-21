@@ -1,4 +1,4 @@
-package com.example.do4e.his;
+package com.example.do4e.ui.his;
 
 import android.view.LayoutInflater;
 import android.view.View;

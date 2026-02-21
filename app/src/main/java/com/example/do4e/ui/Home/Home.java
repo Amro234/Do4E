@@ -1,4 +1,4 @@
-package com.example.do4e.ui;
+package com.example.do4e.ui.Home;
 
 import android.app.TimePickerDialog;
 import android.content.Intent;
@@ -17,7 +17,8 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.do4e.R;
 import com.example.do4e.db.AppDataBase;
 import com.example.do4e.db.MedEntity;
-import com.example.do4e.his.history;
+import com.example.do4e.ui.his.history;
+import com.example.do4e.reminder.ReminderScheduler;
 
 import java.util.Calendar;
 
@@ -79,8 +80,10 @@ public class Home extends AppCompatActivity {
                     (view, h, m) -> {
                         String amPm = h >= 12 ? "PM" : "AM";
                         int displayHour = h % 12;
-                        if (displayHour == 0) displayHour = 12;
-                        String time = String.format(java.util.Locale.getDefault(), "%02d:%02d %s", displayHour, m, amPm);
+                        if (displayHour == 0)
+                            displayHour = 12;
+                        String time = String.format(java.util.Locale.getDefault(), "%02d:%02d %s", displayHour, m,
+                                amPm);
                         timeTxt.setText(time);
                     }, hour, minute, false);
             dialog.show();
@@ -111,6 +114,10 @@ public class Home extends AppCompatActivity {
                 if (!name.isEmpty()) {
                     MedEntity entity = new MedEntity(name, time);
                     db.medDAO().insert(entity);
+
+                    // scheduling the reminder
+                    int notifId = (medName.getText().toString() + time).hashCode();
+                    ReminderScheduler.schedule(Home.this, name, time, notifId);
                 }
             }
 

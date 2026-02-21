@@ -18,29 +18,29 @@
 
     </LinearLayout>
 
+    
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/extended_fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|right"
-        android:layout_marginTop="508dp"
-        android:layout_marginEnd="16dp"
-        android:contentDescription="@string/extended_fab_content_desc"
-        android:text="@string/extended_fab_label"
-        app:elevation="6dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/med_container"
-        app:shapeAppearanceOverlay="?attr/shapeAppearanceLargeComponent" />
+    android:id="@+id/extended_fab"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="16dp"
+    android:layout_marginEnd="16dp"
+    android:text="@string/extended_fab_label"
+    android:contentDescription="@string/extended_fab_content_desc"
+    app:elevation="6dp"
+    app:layout_constraintBottom_toTopOf="@+id/btn_save"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:shapeAppearanceOverlay="?attr/shapeAppearanceLargeComponent" />
 
     <Button
-        android:id="@+id/btn_save"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:layout_marginEnd="16dp"
-        android:text="SAVE"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/med_container" />
+    android:id="@+id/btn_save"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="24dp"
+    android:layout_marginEnd="16dp"
+    android:text="SAVE"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,6 +3,7 @@ package com.example.do4e.ui.Home;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -89,12 +90,28 @@ public class Home extends AppCompatActivity {
             dialog.show();
         });
 
+        Button deleteBtn = new Button(this);
+        deleteBtn.setText("DELETE");
+        deleteBtn.setOnClickListener(v -> {
+            medContainer.removeView(newRow);
+            refreshIndices();
+        });
+
         newRow.addView(index);
         newRow.addView(medName);
         newRow.addView(timeBtn);
         newRow.addView(timeTxt);
+        newRow.addView(deleteBtn);
 
         medContainer.addView(newRow);
+    }
+
+    private void refreshIndices() {
+        for (int i = 0; i < medContainer.getChildCount(); i++) {
+            LinearLayout row = (LinearLayout) medContainer.getChildAt(i);
+            TextView index = (TextView) row.getChildAt(0);
+            index.setText(String.valueOf(i + 1));
+        }
     }
 
     private void saveData() {

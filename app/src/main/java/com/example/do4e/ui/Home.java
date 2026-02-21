@@ -28,9 +28,6 @@ public class Home extends AppCompatActivity {
     LinearLayout medContainer;
     Button btnSave;
     Button btnadd;
-    Button btnTimePicker;
-    EditText etMedName;
-    TextView tvIndex, txtTime;
     private int mHour, mMinute;
 
     @Override
@@ -38,10 +35,6 @@ public class Home extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        btnTimePicker = findViewById(R.id.btn_time);
-        etMedName = findViewById(R.id.et_med_name);
-        tvIndex = findViewById(R.id.tv_index);
-        txtTime = findViewById(R.id.txtTime);
         btnadd = findViewById(R.id.extended_fab);
         medContainer = findViewById(R.id.med_container);
         btnSave = findViewById(R.id.btn_save);
@@ -49,19 +42,8 @@ public class Home extends AppCompatActivity {
         btnadd.setOnClickListener(v -> addNewRow());
         btnSave.setOnClickListener(v -> saveData());
 
-        btnTimePicker.setOnClickListener(v -> {
-            final Calendar c = Calendar.getInstance();
-            mHour = c.get(Calendar.HOUR_OF_DAY);
-            mMinute = c.get(Calendar.MINUTE);
-
-            // Launch Time Picker Dialog
-            TimePickerDialog timePickerDialog = new TimePickerDialog(this,
-                    (view, hourOfDay, minute) -> {
-                        String time = String.format("%02d:%02d", hourOfDay, minute);
-                        txtTime.setText(time);
-                    }, mHour, mMinute, false);
-            timePickerDialog.show();
-        });
+        // Add the first dynamic row initially
+        addNewRow();
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -95,9 +77,12 @@ public class Home extends AppCompatActivity {
 
             TimePickerDialog dialog = new TimePickerDialog(this,
                     (view, h, m) -> {
-                        String time = String.format("%02d:%02d", h, m);
+                        String amPm = h >= 12 ? "PM" : "AM";
+                        int displayHour = h % 12;
+                        if (displayHour == 0) displayHour = 12;
+                        String time = String.format(java.util.Locale.getDefault(), "%02d:%02d %s", displayHour, m, amPm);
                         timeTxt.setText(time);
-                    }, hour, minute, true);
+                    }, hour, minute, false);
             dialog.show();
         });
 

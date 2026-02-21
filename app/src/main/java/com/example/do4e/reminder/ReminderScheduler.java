@@ -116,4 +116,19 @@ public class ReminderScheduler {
             e.printStackTrace();
         }
     }
+
+    public static void cancelAlarm(Context context, String medName, String time) {
+        int notifId = (medName + time).hashCode();
+
+        Intent intent = new Intent(context, ReminderReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                context,
+                notifId,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        alarmManager.cancel(pendingIntent);
+        pendingIntent.cancel();
+    }
 }

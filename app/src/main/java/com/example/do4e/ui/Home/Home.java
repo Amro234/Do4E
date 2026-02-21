@@ -73,6 +73,10 @@ public class Home extends AppCompatActivity {
         timeTxt.setPadding(20, 0, 20, 0);
 
         timeBtn.setOnClickListener(v -> {
+            // Warn if medicine name is not filled yet
+            if (medName.getText().toString().trim().isEmpty()) {
+                Toast.makeText(this, "Please enter a medicine name first", Toast.LENGTH_SHORT).show();
+            }
             Calendar c = Calendar.getInstance();
             int hour = c.get(Calendar.HOUR_OF_DAY);
             int minute = c.get(Calendar.MINUTE);
@@ -86,6 +90,11 @@ public class Home extends AppCompatActivity {
                         String time = String.format(java.util.Locale.getDefault(), "%02d:%02d %s", displayHour, m,
                                 amPm);
                         timeTxt.setText(time);
+                        // Remind again after picking if name is still empty
+                        if (medName.getText().toString().trim().isEmpty()) {
+                            Toast.makeText(Home.this, "Don't forget to enter a medicine name!", Toast.LENGTH_SHORT)
+                                    .show();
+                        }
                     }, hour, minute, false);
             dialog.show();
         });
@@ -115,10 +124,28 @@ public class Home extends AppCompatActivity {
     }
 
     private void saveData() {
+        // Prevent saving when all rows have been deleted
+        if (medContainer.getChildCount() == 0) {
+            Toast.makeText(this, "Please add at least one medicine before saving", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Validate all rows have a medicine name before saving
+        for (int i = 0; i < medContainer.getChildCount(); i++) {
+            LinearLayout row = (LinearLayout) medContainer.getChildAt(i);
+            EditText medName = (EditText) row.getChildAt(1);
+            if (medName.getText().toString().trim().isEmpty()) {
+                Toast.makeText(this, "Row " + (i + 1) + ": Please enter a medicine name", Toast.LENGTH_SHORT).show();
+                return; // stop and don't save anything
+            }
+        }
+
         AppDataBase db = AppDataBase.getInstance(this);
 
         // Run DB operations on a background thread
         new Thread(() -> {
+            boolean anyDuplicate = false;
+
             for (int i = 0; i < medContainer.getChildCount(); i++) {
                 LinearLayout row = (LinearLayout) medContainer.getChildAt(i);
 
@@ -129,12 +156,21 @@ public class Home extends AppCompatActivity {
                 String time = timeTxt.getText().toString().trim();
 
                 if (!name.isEmpty()) {
-                    MedEntity entity = new MedEntity(name, time);
-                    db.medDAO().insert(entity);
+                    // Check for duplicate
+                    MedEntity existing = db.medDAO().getByName(name);
+                    if (existing != null) {
+                        anyDuplicate = true;
+                        runOnUiThread(() -> Toast.makeText(Home.this,
+                                "\"" + name + "\" is already saved. Update it if you want.",
+                                Toast.LENGTH_LONG).show());
+                    } else {
+                        MedEntity entity = new MedEntity(name, time);
+                        db.medDAO().insert(entity);
 
-                    // scheduling the reminder
-                    int notifId = (medName.getText().toString() + time).hashCode();
-                    ReminderScheduler.schedule(Home.this, name, time, notifId);
+                        // scheduling the reminder
+                        int notifId = (name + time).hashCode();
+                        ReminderScheduler.schedule(Home.this, name, time, notifId);
+                    }
                 }
             }
 

@@ -20,4 +20,7 @@ public interface MedDAO {
 
     @Query("SELECT * FROM meds")
     List<MedEntity> getAllMeds();
+
+    @Query("SELECT * FROM meds WHERE name = :name LIMIT 1")
+    MedEntity getByName(String name);
 }

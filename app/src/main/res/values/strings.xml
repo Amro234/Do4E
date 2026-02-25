@@ -3,4 +3,29 @@
     <string name="extended_fab_label">ADD</string>
     <string name="extended_fab_content_desc">Desc</string>
 
+    <!--    On boarding_main    -->
+
+    <string name="title">Doaey</string>
+    <string name="subtitle">Never miss your medication again.</string>
+    <string name="btn_getstarted">Get Started</string>
+
+    <!--  On boarding_nav  -->
+    <string name="btn_next"> Next </string>
+    <string name="back"> Back </string>
+    <string name="Skip"> SKIP </string>
+
+    <!-- onBoard1   -->
+    <string name="title_onboard1">Organize Your Meds</string>
+    <string name="subtitle_onboard1">Easily schedule your medications and never miss a dose again.</string>
+
+    <!-- onBoard2   -->
+    <string name="title_onboard2">Smart Reminders</string>
+    <string name="subtitle_onboard2">Receive timely alerts for every medication, even on the go.</string>
+
+    <!-- onBoard3   -->
+    <string name="title_onboard3">Track Your Health</string>
+    <string name="subtitle_onboard3">Monitor your treatment progress and stay consistent with your health goals.</string>
+
+
+
 </resources>

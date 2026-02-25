@@ -2,4 +2,14 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="junglegreen">#2A9D90</color>
+    <color name="pickeldblue">#334155</color>
+    <color name="Ebony">#0F172A</color>
+    <color name="Fiord">#475569</color>
+    <color name="Vesuvius">#B45309</color>
+    <color name="Crimson">#DC2626</color>
+    <color name="PolshiedWhite">#E6DCDC</color>
+    <color name="StateGray">#64748B</color>
+
+
 </resources>

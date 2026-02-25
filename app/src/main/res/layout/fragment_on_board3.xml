@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.Onboarding.on_board1"
+    android:background="@color/PolshiedWhite"
+    >
+
+    <ImageView
+        android:id="@+id/onbrd_img"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:src="@drawable/onboard3"
+        android:backgroundTint="@color/PolshiedWhite"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginVertical="50dp"
+        />
+
+    <TextView
+        android:layout_gravity="center_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/title_onboard3"
+        android:layout_marginVertical="320dp"
+        android:textSize="24sp"
+        android:fontFamily="@font/manrope_extrabold"
+        android:textColor="@color/Ebony"
+        />
+
+    <TextView
+        android:layout_gravity="center_horizontal"
+        android:layout_width="256dp"
+        android:layout_height="wrap_content"
+        android:text="@string/subtitle_onboard3"
+        android:layout_marginTop="365dp"
+        android:textSize="16sp"
+        android:fontFamily="@font/manrope_medium"
+        android:textColor="@color/Fiord"
+        android:textAlignment="center"
+        />
+</FrameLayout>

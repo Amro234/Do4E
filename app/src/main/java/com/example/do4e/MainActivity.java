@@ -1,47 +1,48 @@
 package com.example.do4e;
 
 import android.Manifest;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.widget.Button;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.example.do4e.ui.his.history;
-import com.example.do4e.ui.Home.Home;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
-
-    Button btnHome, btnHistory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        btnHome = (Button) findViewById(R.id.btn_home);
-        btnHistory = (Button) findViewById(R.id.btn_history);
-
         // Request notification permission if needed (Android 13+)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(this,
                     Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[] { Manifest.permission.POST_NOTIFICATIONS }, 1);
+                ActivityCompat.requestPermissions(this,
+                        new String[] { Manifest.permission.POST_NOTIFICATIONS }, 1);
             }
         }
 
-        btnHome.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, Home.class);
-            startActivity(intent);
-        });
+        // Notification card click listener
+        View notificationIcon = findViewById(R.id.notification_card);
+        if (notificationIcon != null) {
+            notificationIcon.setOnClickListener(v -> {
+                // Handle notification tap
+            });
+        }
 
-        btnHistory.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, history.class);
-            startActivity(intent);
-        });
+        // Bottom Navigation setup
+        BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
+        if (bottomNav != null) {
+            bottomNav.setOnItemSelectedListener(item -> {
+                // Handle bottom nav item selection here if needed
+                return true;
+            });
+        }
     }
 }

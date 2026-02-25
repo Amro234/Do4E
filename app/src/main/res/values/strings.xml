@@ -26,6 +26,17 @@
     <string name="title_onboard3">Track Your Health</string>
     <string name="subtitle_onboard3">Monitor your treatment progress and stay consistent with your health goals.</string>
 
+    <!-- Main -->
+
+    <!--  Botm_nav_bar  -->
+    <string name="Home">Home</string>
+    <string name="schedule_Nav_title">Schedule</string>
+    <string name="meds_Nav_title">Meds</string>
+    <string name="profile">Profile</string>
+
+    <!--  Header  -->
+    <string name="welcome">Hello, Amro</string>
+    <string name="Sub_welcome"> You are doing great today! </string>
 
 
 </resources>

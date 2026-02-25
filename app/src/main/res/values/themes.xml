@@ -2,11 +2,15 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.Do4E" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="colorPrimary">@color/junglegreen</item>
         <item name="android:navigationBarColor">@color/PolshiedWhite</item>
         <item name="android:windowLightNavigationBar">true</item>
         <item name="android:statusBarColor">@color/PolshiedWhite</item>
         <item name="android:windowLightStatusBar">true</item>
+    </style>
+    <style name="CircleAppearance">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
     </style>
 
     <style name="Theme.Do4E" parent="Base.Theme.Do4E" />

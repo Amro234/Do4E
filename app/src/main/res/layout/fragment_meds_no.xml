@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/frameLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/PolshiedWhite"
+    tools:context=".ui.meds.meds_no">
+
+    <!-- Centered empty state content -->
+    <LinearLayout
+        android:id="@+id/empty_state_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="24dp"
+        app:layout_constraintBottom_toTopOf="@+id/btn_add_medicine"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.42">
+
+        <ImageView
+            android:id="@+id/image_no_medical"
+            android:layout_width="160dp"
+            android:layout_height="160dp"
+            android:src="@drawable/no_medicine_icon_vector" />
+
+        <TextView
+            android:id="@+id/tv_no_medicine_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:fontFamily="@font/manrope_bold"
+            android:text="@string/Medicine_No"
+            android:textAlignment="center"
+            android:textColor="@color/Ebony"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/tv_no_medicine_sub"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/manrope_regular"
+            android:text="Add your first medicine to get started."
+            android:textAlignment="center"
+            android:textColor="@color/StateGray"
+            android:textSize="14sp" />
+
+    </LinearLayout>
+
+    <!-- Bottom Add Medicine button -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_add_medicine"
+        android:layout_width="0dp"
+        android:layout_height="58dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="32dp"
+        android:backgroundTint="@color/junglegreen"
+        android:fontFamily="@font/manrope_bold"
+        android:text="@string/Adding_medicine"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:cornerRadius="30dp"
+        app:icon="@drawable/ic_plus_24px"
+        app:iconGravity="textStart"
+        app:iconTint="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

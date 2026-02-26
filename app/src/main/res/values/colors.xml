@@ -10,6 +10,13 @@
     <color name="Crimson">#DC2626</color>
     <color name="PolshiedWhite">#E6DCDC</color>
     <color name="StateGray">#64748B</color>
+    <color name="LightGray">#F1F5F9</color>
+    <color name="InputBg">#F8FAFC</color>
+    <color name="MintBg">#E0F2F1</color>
+    <color name="BorderColor">#E2E8F0</color>
+    <color name="AmberOrange">#EA580C</color>
+    <color name="SkyBlue">#2563EB</color>
+    <color name="ProgressTrack">#E2E8F0</color>
 
 
 </resources>

@@ -1,4 +1,4 @@
-package com.example.do4e.ui.Home;
+package com.example.do4e.ui.home;
 
 import android.os.Bundle;
 

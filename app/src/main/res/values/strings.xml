@@ -34,9 +34,61 @@
     <string name="meds_Nav_title">Meds</string>
     <string name="profile">Profile</string>
 
-    <!--  Header  -->
+    <!--  Header Main  -->
     <string name="welcome">Hello, Amro</string>
     <string name="Sub_welcome"> You are doing great today! </string>
+
+
+    <!-- Add_meds FragGrande -->
+
+    <string name="add_meds_title"> Add New Medicine</string>
+    <string name="general"> General info</string>
+    <string name="med_name"> Medicine Name (e.g Paracetamol )</string>
+    <string name="Dosage"> Dosage (e.g 500mg)</string>
+    <string name="schedule_freQ"> Schedule and Frequency </string>
+    <string name="once"> Once </string>
+    <string name="Twice"> Twice </string>
+    <string name="Trice"> Trice </string>
+    <string name="Instructions"> Instructions </string>
+    <string name="Before_Food"> Before Food </string>
+    <string name="During_Food"> During Food </string>
+    <string name="After_Food"> After Food </string>
+    <string name="Notes"> Notes (Optional)</string>
+    <string name="Notes_Description"> Avoid citrus fruits, take with water, etc</string>
+    <string name="Save_Medicine"> Save Medicine </string>
+    <string name="Reset"> Reset </string>
+    <string name="pick_time">Pick a time</string>
+    <string name="am">AM</string>
+    <string name="pm">PM</string>
+    <string name="hour">HOUR</string>
+    <string name="minute">MINUTE</string>
+    <string name="default_hour">08</string>
+    <string name="default_minute">30</string>
+    <string name="Medicine_type">Medicine Type</string>
+    <string name="pill">Pill</string>
+    <string name="syrup">Syrup</string>
+    <string name="syringe">Syringe</string>
+
+    <!--    Meds_No_frag   -->
+    <string name="Medicine_No"> There Is No Medicines Yet !</string>
+    <string name="Adding_medicine"> Add Medicine </string>
+
+    <!--    My Medicine   -->
+    <string name="my_medicines_title">My Medicines</string>
+    <string name="tab_today">Today</string>
+    <string name="tab_weekly">Weekly</string>
+    <string name="tab_monthly">Monthly</string>
+    <string name="upcoming_recent">Upcoming &amp; Recent</string>
+    <string name="course_progress">COURSE PROGRESS</string>
+    <string name="status_taken">Taken</string>
+    <string name="status_upcoming">Upcoming</string>
+    <string name="status_missed">Missed</string>
+    <string name="btn_log_now">Log Now</string>
+    <string name="next_dose">Next dose: Today, 2:00 PM</string>
+    <string name="check_timing">Check dose timing</string>
+    <string name="day_progress">DAY 5 OF 10</string>
+
+    <!--    My Schedule    -->
 
 
 </resources>

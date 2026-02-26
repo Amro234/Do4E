@@ -1,0 +1,489 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/PolshiedWhite"
+    tools:context=".ui.meds.my_medicines">
+
+    <!-- Header -->
+    <LinearLayout
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/btn_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/baseline_arrow_back_24"
+            app:tint="@color/Ebony" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="@font/manrope_bold"
+            android:text="@string/my_medicines_title"
+            android:textAlignment="center"
+            android:textColor="@color/Ebony"
+            android:textSize="20sp" />
+
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/header"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Tabs -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:background="@drawable/bg_tab_container"
+                android:orientation="horizontal"
+                android:padding="4dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="@string/tab_today"
+                    android:background="@drawable/bg_tab_selected"
+                    android:textColor="@color/junglegreen"
+                    android:fontFamily="@font/manrope_semibold"
+                    />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="@string/tab_weekly"
+                    android:textColor="@color/StateGray"
+                    android:fontFamily="@font/manrope_semibold"
+                    android:elevation="2dp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="@string/tab_monthly"
+                    android:textColor="@color/StateGray"
+                    android:fontFamily="@font/manrope_semibold" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:fontFamily="@font/manrope_bold"
+                android:text="@string/upcoming_recent"
+                android:textColor="@color/Ebony"
+                android:textSize="18sp" />
+
+            <!-- Card 1: Panadol Extra -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/bg_medicine_card"
+                android:elevation="4dp"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/manrope_bold"
+                        android:text="Panadol Extra"
+                        android:textColor="@color/Ebony"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:background="@drawable/bg_badge_taken"
+                        android:paddingHorizontal="16dp"
+                        android:paddingVertical="4dp"
+                        android:text="@string/status_taken"
+                        android:textColor="@color/junglegreen"
+                        android:textSize="12sp"
+                        android:fontFamily="@font/manrope_semibold" />
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@drawable/ic_clock"
+                        app:tint="@color/StateGray" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:fontFamily="@font/manrope_medium"
+                        android:text="08:00 AM"
+                        android:textColor="@color/StateGray"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/manrope_bold"
+                        android:text="@string/course_progress"
+                        android:textColor="@color/StateGray"
+                        android:textSize="10sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:fontFamily="@font/manrope_bold"
+                        android:text="@string/day_progress"
+                        android:textColor="@color/StateGray"
+                        android:textSize="10sp" />
+                </RelativeLayout>
+
+                <com.google.android.material.progressindicator.LinearProgressIndicator
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:progress="50"
+                    app:indicatorColor="@color/junglegreen"
+                    app:trackColor="@color/ProgressTrack"
+                    app:trackCornerRadius="4dp"
+                    app:trackThickness="8dp" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp">
+
+                    <ImageView
+                        android:id="@+id/btn_edit_1"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_edit"
+                        app:tint="@color/junglegreen" />
+
+                    <ImageView
+                        android:id="@+id/btn_delete_1"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_toEndOf="@id/btn_edit_1"
+                        android:src="@drawable/ic_delete"
+                        app:tint="@color/StateGray" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:fontFamily="@font/manrope_medium"
+                        android:text="@string/next_dose"
+                        android:textColor="@color/StateGray"
+                        android:textSize="12sp" />
+                </RelativeLayout>
+            </LinearLayout>
+
+            <!-- Card 2: Amoxicillin -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/bg_medicine_card"
+                android:elevation="4dp"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/manrope_bold"
+                        android:text="Amoxicillin 500mg"
+                        android:textColor="@color/Ebony"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:background="@drawable/bg_badge_upcoming"
+                        android:paddingHorizontal="16dp"
+                        android:paddingVertical="4dp"
+                        android:text="@string/status_upcoming"
+                        android:textColor="@color/SkyBlue"
+                        android:textSize="12sp"
+                        android:fontFamily="@font/manrope_semibold" />
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@drawable/ic_clock"
+                        app:tint="@color/StateGray" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:fontFamily="@font/manrope_medium"
+                        android:text="12:30 PM"
+                        android:textColor="@color/StateGray"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/manrope_bold"
+                        android:text="@string/course_progress"
+                        android:textColor="@color/StateGray"
+                        android:textSize="10sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:fontFamily="@font/manrope_bold"
+                        android:text="DAY 2 OF 7"
+                        android:textColor="@color/StateGray"
+                        android:textSize="10sp" />
+                </RelativeLayout>
+
+                <com.google.android.material.progressindicator.LinearProgressIndicator
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:progress="30"
+                    app:indicatorColor="@color/junglegreen"
+                    app:trackColor="@color/ProgressTrack"
+                    app:trackCornerRadius="4dp"
+                    app:trackThickness="8dp" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp">
+
+                    <ImageView
+                        android:id="@+id/btn_edit_2"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_edit"
+                        app:tint="@color/junglegreen" />
+
+                    <ImageView
+                        android:id="@+id/btn_delete_2"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_toEndOf="@id/btn_edit_2"
+                        android:src="@drawable/ic_delete"
+                        app:tint="@color/StateGray" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:layout_alignParentEnd="true"
+                        android:backgroundTint="@color/junglegreen"
+                        android:paddingHorizontal="24dp"
+                        android:text="@string/btn_log_now"
+                        android:textAllCaps="false"
+                        android:textColor="@color/white"
+                        android:textSize="12sp"
+                        android:fontFamily="@font/manrope_bold"
+                        app:cornerRadius="20dp" />
+                </RelativeLayout>
+            </LinearLayout>
+
+            <!-- Card 3: Vitamin D3 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="80dp"
+                android:background="@drawable/bg_medicine_card"
+                android:elevation="4dp"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/manrope_bold"
+                        android:text="Vitamin D3"
+                        android:textColor="@color/Ebony"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:background="@drawable/bg_badge_missed"
+                        android:paddingHorizontal="16dp"
+                        android:paddingVertical="4dp"
+                        android:text="@string/status_missed"
+                        android:textColor="@color/AmberOrange"
+                        android:textSize="12sp"
+                        android:fontFamily="@font/manrope_semibold" />
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@drawable/ic_clock"
+                        app:tint="@color/StateGray" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:fontFamily="@font/manrope_medium"
+                        android:text="Yesterday, 09:00 PM"
+                        android:textColor="@color/StateGray"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/manrope_bold"
+                        android:text="@string/course_progress"
+                        android:textColor="@color/StateGray"
+                        android:textSize="10sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:fontFamily="@font/manrope_bold"
+                        android:text="CONTINUOUS"
+                        android:textColor="@color/StateGray"
+                        android:textSize="10sp" />
+                </RelativeLayout>
+
+                <com.google.android.material.progressindicator.LinearProgressIndicator
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:progress="100"
+                    app:indicatorColor="@color/junglegreen"
+                    app:trackColor="@color/ProgressTrack"
+                    app:trackCornerRadius="4dp"
+                    app:trackThickness="8dp" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp">
+
+                    <ImageView
+                        android:id="@+id/btn_edit_3"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_edit"
+                        app:tint="@color/junglegreen" />
+
+                    <ImageView
+                        android:id="@+id/btn_delete_3"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_toEndOf="@id/btn_edit_3"
+                        android:src="@drawable/ic_delete"
+                        app:tint="@color/StateGray" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:fontFamily="@font/manrope_medium"
+                        android:text="@string/check_timing"
+                        android:textColor="@color/AmberOrange"
+                        android:textSize="12sp" />
+                </RelativeLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_add"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="24dp"
+        android:backgroundTint="@color/junglegreen"
+        android:src="@drawable/ic_plus_24px"
+        app:tint="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

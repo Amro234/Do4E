@@ -7,16 +7,17 @@
         android:icon="@drawable/home_ic"
         />
 
-    <item
-        android:id="@+id/schedule"
-        android:title="@string/schedule_Nav_title"
-        android:icon="@drawable/calendar_today"
-        />
 
     <item
         android:id="@+id/fav_id"
         android:title="@string/meds_Nav_title"
         android:icon="@drawable/ic_meds"
+        />
+
+    <item
+        android:id="@+id/schedule"
+        android:title="@string/schedule_Nav_title"
+        android:icon="@drawable/calendar_today"
         />
 
     <item

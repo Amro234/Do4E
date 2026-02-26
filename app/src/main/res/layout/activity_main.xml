@@ -35,7 +35,7 @@
             android:layout_marginStart="16dp"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="@+id/profile_image"
-            app:layout_constraintEnd_toStartOf="@+id/notification_card"
+            app:layout_constraintEnd_toStartOf="@+id/notification_bill"
             app:layout_constraintStart_toEndOf="@+id/profile_image"
             app:layout_constraintTop_toTopOf="@+id/profile_image">
 
@@ -58,24 +58,17 @@
                 android:textSize="16sp" />
         </LinearLayout>
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/notification_card"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            app:cardBackgroundColor="@color/white"
-            app:cardCornerRadius="28dp"
-            app:cardElevation="4dp"
-            app:layout_constraintBottom_toBottomOf="@+id/profile_image"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/profile_image">
-
             <ImageView
+                android:id="@+id/notification_bill"
                 android:layout_width="28dp"
                 android:layout_height="28dp"
                 android:layout_gravity="center"
                 android:src="@drawable/ic_notifications"
-                app:tint="@color/pickeldblue" />
-        </androidx.cardview.widget.CardView>
+                app:tint="@color/pickeldblue"
+                app:layout_constraintBottom_toBottomOf="@+id/profile_image"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/profile_image"
+                />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView

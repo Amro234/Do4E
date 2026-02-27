@@ -1,6 +1,7 @@
 package com.example.do4e.db;
 
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "meds")
@@ -39,6 +40,7 @@ public class MedEntity {
     public MedEntity() {
     }
 
+    @Ignore
     public MedEntity(String name, String dosage, String time, int hour, int minute,
             String frequency, int durationDays, boolean isContinuous,
             String medType, String instruction, String notes) {

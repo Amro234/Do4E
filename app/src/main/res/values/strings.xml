@@ -46,6 +46,10 @@
     <string name="med_name"> Medicine Name (e.g Paracetamol )</string>
     <string name="Dosage"> Dosage (e.g 500mg)</string>
     <string name="schedule_freQ"> Schedule and Frequency </string>
+    <string name="Duration">Duration</string>
+    <string name="Continuous_label">Continuous (no end date)</string>
+    <string name="Days_label">DAYS</string>
+    <string name="Continuous_badge">Ongoing · No End Date</string>
     <string name="once"> Once </string>
     <string name="Twice"> Twice </string>
     <string name="Trice"> Trice </string>
@@ -68,6 +72,7 @@
     <string name="pill">Pill</string>
     <string name="syrup">Syrup</string>
     <string name="syringe">Syringe</string>
+
 
     <!--    Meds_No_frag   -->
     <string name="Medicine_No"> There Is No Medicines Yet !</string>

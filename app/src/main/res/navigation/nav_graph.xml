@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/home_id">
+
+    <fragment
+        android:id="@+id/home_id"
+        android:name="com.example.do4e.ui.home.Home"
+        android:label="Home"
+        tools:layout="@layout/fragment_home" />
+
+    <fragment
+        android:id="@+id/fav_id"
+        android:name="com.example.do4e.ui.meds.my_medicines"
+        android:label="My Medicines"
+        tools:layout="@layout/fragment_my_medicines">
+        <action
+            android:id="@+id/action_my_medicines_to_add_meds"
+            app:destination="@id/add_meds"
+            app:enterAnim="@anim/slide_in_up"
+            app:exitAnim="@anim/stay"
+            app:popEnterAnim="@anim/stay"
+            app:popExitAnim="@anim/slide_out_down" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/add_meds"
+        android:name="com.example.do4e.ui.meds.add_meds"
+        android:label="Add Medicine"
+        tools:layout="@layout/fragment_add_meds" />
+
+    <fragment
+        android:id="@+id/meds_no"
+        android:name="com.example.do4e.ui.meds.meds_no"
+        android:label="No Medicines"
+        tools:layout="@layout/fragment_meds_no">
+        <action
+            android:id="@+id/action_meds_no_to_add_meds"
+            app:destination="@id/add_meds" />
+        <action
+            android:id="@+id/action_meds_no_to_my_medicines"
+            app:destination="@id/fav_id"
+            app:popUpTo="@id/meds_no"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/schedule"
+        android:name="com.example.do4e.ui.Schedule.Schedule"
+        android:label="Schedule"
+        tools:layout="@layout/fragment_schedule" />
+
+    <fragment
+        android:id="@+id/plan_id"
+        android:name="com.example.do4e.ui.home.Home"
+        android:label="Profile" />
+
+</navigation>

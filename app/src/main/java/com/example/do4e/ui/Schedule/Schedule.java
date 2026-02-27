@@ -14,18 +14,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.do4e.R;
 import com.example.do4e.db.AppDataBase;
 import com.example.do4e.db.MedEntity;
-import com.example.do4e.navigation.FragmentNavigation;
 import com.example.do4e.reminder.ReminderScheduler;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -69,8 +68,6 @@ public class Schedule extends Fragment {
     // ─── Add a new dynamic medication card ───────────────────────────────────
 
     private void addNewCard() {
-        LayoutInflater inflater = LayoutInflater.from(requireContext());
-
         // Build card container
         CardView card = new CardView(requireContext());
         LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(
@@ -275,8 +272,6 @@ public class Schedule extends Fragment {
 
             @Override
             public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-                // Build "We'll remind you to take Panadol at 08:00 AM."
-                // with medName and time highlighted teal
                 TextView subtitle = view.findViewById(R.id.tv_success_subtitle);
                 String full = "We'll remind you to take " + medName + " at " + time + ".";
                 SpannableString span = new SpannableString(full);
@@ -292,13 +287,11 @@ public class Schedule extends Fragment {
 
                 subtitle.setText(span);
 
-                // Back to Home
+                // Back to Home using nav component
                 view.findViewById(R.id.btn_back_to_home).setOnClickListener(v -> {
                     dismiss();
-                    if (requireActivity() instanceof FragmentNavigation) {
-                        ((FragmentNavigation) requireActivity()).replaceFragment(
-                                new com.example.do4e.ui.home.Home());
-                    }
+                    NavHostFragment.findNavController(Schedule.this)
+                            .navigate(R.id.home_id);
                 });
 
                 // View Schedule — just dismiss, user is already on Schedule

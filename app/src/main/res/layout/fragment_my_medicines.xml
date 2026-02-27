@@ -21,8 +21,7 @@
             android:id="@+id/btn_back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/baseline_arrow_back_24"
-            />
+            android:src="@drawable/baseline_arrow_back_24" />
 
         <TextView
             android:layout_width="0dp"
@@ -35,9 +34,76 @@
             android:textSize="20sp" />
     </LinearLayout>
 
+    <!-- ─── Empty State (shown when no medicines) ────────────────────────── -->
+    <LinearLayout
+        android:id="@+id/empty_state_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/btn_add_medicine"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/header"
+        app:layout_constraintVertical_bias="0.42">
+
+        <ImageView
+            android:layout_width="160dp"
+            android:layout_height="160dp"
+            android:src="@drawable/no_medicine_icon_vector" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:fontFamily="@font/manrope_bold"
+            android:text="@string/Medicine_No"
+            android:textAlignment="center"
+            android:textColor="@color/Ebony"
+            android:textSize="20sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/manrope_regular"
+            android:text="Add your first medicine to get started."
+            android:textAlignment="center"
+            android:textColor="@color/StateGray"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <!-- Add Medicine bottom button (shown only in empty state) -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_add_medicine"
+        android:layout_width="0dp"
+        android:layout_height="58dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="32dp"
+        android:backgroundTint="@color/junglegreen"
+        android:fontFamily="@font/manrope_bold"
+        android:text="@string/Adding_medicine"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:visibility="gone"
+        app:cornerRadius="30dp"
+        app:icon="@drawable/ic_plus_24px"
+        app:iconGravity="textStart"
+        app:iconTint="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- ─── Medicine List (shown when medicines exist) ───────────────────── -->
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/medicines_list_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@id/header"
         app:layout_constraintBottom_toBottomOf="parent">
 
@@ -63,8 +129,7 @@
                     android:text="@string/tab_today"
                     android:background="@drawable/bg_tab_selected"
                     android:textColor="@color/junglegreen"
-                    android:fontFamily="@font/manrope_semibold"
-                    />
+                    android:fontFamily="@font/manrope_semibold" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -106,6 +171,7 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
+    <!-- FAB (shown only when medicines exist) -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_add"
         android:layout_width="wrap_content"
@@ -113,9 +179,10 @@
         android:layout_margin="24dp"
         android:backgroundTint="@color/junglegreen"
         android:src="@drawable/ic_plus_24px"
+        android:visibility="gone"
         app:tint="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:shapeAppearanceOverlay="@style/CircleAppearance"/>
+        app:shapeAppearanceOverlay="@style/CircleAppearance" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

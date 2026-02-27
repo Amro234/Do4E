@@ -12,12 +12,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.do4e.navigation.FragmentNavigation;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.do4e.R;
 import com.example.do4e.db.AppDataBase;
@@ -57,11 +57,8 @@ public class add_meds extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         // ── Back button ──────────────────────────────────────────────────────
-        view.findViewById(R.id.btn_back).setOnClickListener(v -> {
-            if (requireActivity() instanceof FragmentNavigation) {
-                ((FragmentNavigation) requireActivity()).popBackStack();
-            }
-        });
+        view.findViewById(R.id.btn_back)
+                .setOnClickListener(v -> NavHostFragment.findNavController(this).popBackStack());
 
         // ── Time selection ───────────────────────────────────────────────────
         TextView tvHour = view.findViewById(R.id.tv_selected_hour);
@@ -228,6 +225,9 @@ public class add_meds extends Fragment {
 
         AppDataBase db = AppDataBase.getInstance(requireContext());
 
+        // Capture navController on the main thread before entering background work
+        NavController navController = NavHostFragment.findNavController(this);
+
         new Thread(() -> {
             db.medDAO().insert(med);
 
@@ -235,60 +235,77 @@ public class add_meds extends Fragment {
             int notifId = (name + timeStr).hashCode();
             ReminderScheduler.schedule(requireContext(), name, timeStr, notifId);
 
-            requireActivity().runOnUiThread(() -> {
-                if (requireActivity() instanceof FragmentNavigation) {
-                    showSuccessSheet(name, timeStr);
-                }
-            });
+            requireActivity().runOnUiThread(() -> showSuccessSheet(name, timeStr, navController));
         }).start();
     }
 
     // ─── Success bottom sheet ─────────────────────────────────────────────────
 
-    private void showSuccessSheet(String medName, String time) {
-        BottomSheetDialogFragment sheet = new BottomSheetDialogFragment() {
-            @Nullable
-            @Override
-            public View onCreateView(@NonNull LayoutInflater inflater,
-                    @Nullable ViewGroup container,
-                    @Nullable Bundle savedInstanceState) {
-                return inflater.inflate(R.layout.bottom_sheet_success, container, false);
-            }
-
-            @Override
-            public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-                TextView subtitle = view.findViewById(R.id.tv_success_subtitle);
-                String full = "We'll remind you to take " + medName + " at " + time + ".";
-                SpannableString span = new SpannableString(full);
-                int teal = ContextCompat.getColor(requireContext(), R.color.junglegreen);
-
-                int ns = full.indexOf(medName), ne = ns + medName.length();
-                span.setSpan(new ForegroundColorSpan(teal), ns, ne, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                span.setSpan(new StyleSpan(Typeface.BOLD), ns, ne, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-                int ts = full.indexOf(time), te = ts + time.length();
-                span.setSpan(new ForegroundColorSpan(teal), ts, te, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                span.setSpan(new StyleSpan(Typeface.BOLD), ts, te, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-                subtitle.setText(span);
-
-                view.findViewById(R.id.btn_back_to_home).setOnClickListener(v -> {
-                    dismiss();
-                    if (requireActivity() instanceof FragmentNavigation) {
-                        ((FragmentNavigation) requireActivity()).replaceFragment(new my_medicines());
-                    }
-                });
-
-                view.findViewById(R.id.btn_view_schedule).setOnClickListener(v -> {
-                    dismiss();
-                    if (requireActivity() instanceof FragmentNavigation) {
-                        ((FragmentNavigation) requireActivity()).replaceFragment(
-                                new com.example.do4e.ui.Schedule.Schedule());
-                    }
-                });
-            }
-        };
+    private void showSuccessSheet(String medName, String time, NavController navController) {
+        SuccessSheet sheet = SuccessSheet.newInstance(medName, time);
+        // Store navController for the sheet to use when buttons are tapped
+        sheet.setNavController(navController);
         sheet.show(getParentFragmentManager(), "success_sheet");
+    }
+
+    /** Must be public static so Android can recreate it from instance state. */
+    public static class SuccessSheet extends com.google.android.material.bottomsheet.BottomSheetDialogFragment {
+
+        private NavController navController;
+
+        public static SuccessSheet newInstance(String medName, String time) {
+            SuccessSheet sheet = new SuccessSheet();
+            Bundle args = new Bundle();
+            args.putString("medName", medName);
+            args.putString("time", time);
+            sheet.setArguments(args);
+            return sheet;
+        }
+
+        public void setNavController(NavController nc) {
+            this.navController = nc;
+        }
+
+        @Nullable
+        @Override
+        public View onCreateView(@NonNull LayoutInflater inflater,
+                @Nullable ViewGroup container,
+                @Nullable Bundle savedInstanceState) {
+            return inflater.inflate(R.layout.bottom_sheet_success, container, false);
+        }
+
+        @Override
+        public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+            String medName = requireArguments().getString("medName", "");
+            String time = requireArguments().getString("time", "");
+
+            TextView subtitle = view.findViewById(R.id.tv_success_subtitle);
+            String full = "We'll remind you to take " + medName + " at " + time + ".";
+            SpannableString span = new SpannableString(full);
+            int teal = ContextCompat.getColor(requireContext(), R.color.junglegreen);
+
+            int ns = full.indexOf(medName), ne = ns + medName.length();
+            span.setSpan(new ForegroundColorSpan(teal), ns, ne, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            span.setSpan(new StyleSpan(Typeface.BOLD), ns, ne, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            int ts = full.indexOf(time), te = ts + time.length();
+            span.setSpan(new ForegroundColorSpan(teal), ts, te, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            span.setSpan(new StyleSpan(Typeface.BOLD), ts, te, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            subtitle.setText(span);
+
+            view.findViewById(R.id.btn_back_to_home).setOnClickListener(v -> {
+                dismiss();
+                if (navController != null)
+                    navController.navigate(R.id.fav_id);
+            });
+
+            view.findViewById(R.id.btn_view_schedule).setOnClickListener(v -> {
+                dismiss();
+                if (navController != null)
+                    navController.navigate(R.id.schedule);
+            });
+        }
     }
 
     // ─── Reset form ───────────────────────────────────────────────────────────

@@ -1,6 +1,7 @@
 package com.example.do4e.ui.Onboarding;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.ViewGroup;
@@ -117,6 +118,10 @@ public class onboard_nav extends AppCompatActivity {
     }
 
     private void navigateToHome() {
+        // Save onboarding completion flag
+        SharedPreferences prefs = getSharedPreferences("Do4E_prefs", MODE_PRIVATE);
+        prefs.edit().putBoolean("onboarding_completed", true).apply();
+
         Intent intent = new Intent(onboard_nav.this, MainActivity.class);
         startActivity(intent);
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);

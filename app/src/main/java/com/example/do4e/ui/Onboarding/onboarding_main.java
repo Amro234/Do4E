@@ -9,6 +9,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.widget.Button;
 
 import com.example.do4e.R;
@@ -19,6 +20,15 @@ public class onboarding_main extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
+
+        // ── Skip onboarding if already completed ─────────────────────────
+        SharedPreferences prefs = getSharedPreferences("Do4E_prefs", MODE_PRIVATE);
+        if (prefs.getBoolean("onboarding_completed", false)) {
+            startActivity(new Intent(this, com.example.do4e.MainActivity.class));
+            finish();
+            return;
+        }
+
         setContentView(R.layout.activity_onboarding_main);
 
         getWindow().setNavigationBarColor(androidx.core.content.ContextCompat.getColor(this, R.color.PolshiedWhite));

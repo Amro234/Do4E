@@ -11,12 +11,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.do4e.navigation.FragmentNavigation;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -33,7 +33,12 @@ import java.util.List;
 public class my_medicines extends Fragment {
 
     private MedAdapter adapter;
-    private View emptyState; // the meds_no fragment container (we show/hide it)
+
+    // Views toggled between empty state and list state
+    private View emptyStateLayout;
+    private View medicinesListLayout;
+    private View fabAdd;
+    private View btnAddMedicine;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -45,19 +50,23 @@ public class my_medicines extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Back button
-        view.findViewById(R.id.btn_back).setOnClickListener(v -> {
-            if (requireActivity() instanceof FragmentNavigation) {
-                ((FragmentNavigation) requireActivity()).popBackStack();
-            }
-        });
+        // Cache views
+        emptyStateLayout = view.findViewById(R.id.empty_state_layout);
+        medicinesListLayout = view.findViewById(R.id.medicines_list_layout);
+        fabAdd = view.findViewById(R.id.fab_add);
+        btnAddMedicine = view.findViewById(R.id.btn_add_medicine);
 
-        // FAB → navigate to add_meds
-        view.findViewById(R.id.fab_add).setOnClickListener(v -> {
-            if (requireActivity() instanceof FragmentNavigation) {
-                ((FragmentNavigation) requireActivity()).navigateTo(new add_meds(), true);
-            }
-        });
+        // Back button
+        view.findViewById(R.id.btn_back)
+                .setOnClickListener(v -> NavHostFragment.findNavController(this).popBackStack());
+
+        // FAB (list state) → navigate to add_meds
+        fabAdd.setOnClickListener(
+                v -> NavHostFragment.findNavController(this).navigate(R.id.action_my_medicines_to_add_meds));
+
+        // Empty-state "Add Medicine" button → navigate to add_meds
+        btnAddMedicine.setOnClickListener(
+                v -> NavHostFragment.findNavController(this).navigate(R.id.action_my_medicines_to_add_meds));
 
         // RecyclerView setup
         RecyclerView recyclerView = view.findViewById(R.id.rv_medicines);
@@ -73,7 +82,7 @@ public class my_medicines extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        loadMedicines(); // refresh when returning to this screen
+        loadMedicines();
     }
 
     // ─── Load from DB ─────────────────────────────────────────────────────────
@@ -82,6 +91,8 @@ public class my_medicines extends Fragment {
         AppDataBase db = AppDataBase.getInstance(requireContext());
         new Thread(() -> {
             List<MedEntity> meds = db.medDAO().getAllMeds();
+            if (!isAdded())
+                return; // guard: fragment may be detached
             requireActivity().runOnUiThread(() -> {
                 if (adapter != null)
                     adapter.updateList(meds);
@@ -90,65 +101,101 @@ public class my_medicines extends Fragment {
         }).start();
     }
 
+    /**
+     * Toggles between the empty state and the list state
+     * purely via visibility — no fragment navigation, no blink.
+     */
     private void updateEmptyState(boolean isEmpty) {
-        // The fragment layout has a scroll view with medicine cards.
-        // If empty, navigate to the meds_no fragment instead.
         if (isEmpty) {
-            if (requireActivity() instanceof FragmentNavigation) {
-                ((FragmentNavigation) requireActivity()).replaceFragment(new meds_no());
-            }
+            emptyStateLayout.setVisibility(View.VISIBLE);
+            btnAddMedicine.setVisibility(View.VISIBLE);
+            medicinesListLayout.setVisibility(View.GONE);
+            fabAdd.setVisibility(View.GONE);
+        } else {
+            emptyStateLayout.setVisibility(View.GONE);
+            btnAddMedicine.setVisibility(View.GONE);
+            medicinesListLayout.setVisibility(View.VISIBLE);
+            fabAdd.setVisibility(View.VISIBLE);
         }
     }
 
     // ─── Delete flow ──────────────────────────────────────────────────────────
 
     private void onDeleteClicked(MedEntity med) {
-        BottomSheetDialogFragment sheet = new BottomSheetDialogFragment() {
-            @Nullable
-            @Override
-            public View onCreateView(@NonNull LayoutInflater inflater,
-                    @Nullable ViewGroup container,
-                    @Nullable Bundle savedInstanceState) {
-                return inflater.inflate(R.layout.bottom_sheet_delete, container, false);
-            }
-
-            @Override
-            public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-                // Build subtitle with bold med name
-                TextView subtitle = view.findViewById(R.id.tv_delete_subtitle);
-                String detail = med.dosage.isEmpty() ? med.frequency : med.dosage + " · " + med.frequency;
-                String full = "Are you sure you want to remove " + med.name
-                        + " (" + detail + ") from your schedule? This action cannot be undone.";
-                SpannableString span = new SpannableString(full);
-                int ns = full.indexOf(med.name), ne = ns + med.name.length();
-                span.setSpan(new StyleSpan(Typeface.BOLD), ns, ne, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                span.setSpan(new ForegroundColorSpan(
-                        ContextCompat.getColor(requireContext(), R.color.Ebony)),
-                        ns, ne, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                subtitle.setText(span);
-
-                // Medicine info card
-                ((TextView) view.findViewById(R.id.tv_med_name_card)).setText(med.name);
-                ((TextView) view.findViewById(R.id.tv_med_detail_card)).setText(detail);
-
-                // Confirm delete
-                view.findViewById(R.id.btn_confirm_delete).setOnClickListener(v -> {
-                    AppDataBase db = AppDataBase.getInstance(requireContext());
-                    new Thread(() -> {
-                        // Cancel the alarm first
-                        ReminderScheduler.cancelAlarm(requireContext(), med.name, med.time);
-                        db.medDAO().delete(med);
-                        requireActivity().runOnUiThread(() -> {
-                            dismiss();
-                            loadMedicines(); // refresh list
-                        });
-                    }).start();
-                });
-
-                view.findViewById(R.id.btn_cancel_delete).setOnClickListener(v -> dismiss());
-            }
-        };
+        DeleteSheet sheet = DeleteSheet.newInstance(med);
+        sheet.setOnDeleteConfirmed(() -> loadMedicines());
         sheet.show(getParentFragmentManager(), "delete_sheet");
+    }
+
+    /** Must be public static so Android can recreate it from instance state. */
+    public static class DeleteSheet extends com.google.android.material.bottomsheet.BottomSheetDialogFragment {
+
+        private Runnable onConfirmed;
+
+        // We pass only primitives through the Bundle; hold the MedEntity via a static
+        // pass-through since it's not Parcelable. We use a simple holder approach.
+        private MedEntity med;
+
+        public static DeleteSheet newInstance(MedEntity med) {
+            DeleteSheet sheet = new DeleteSheet();
+            sheet.med = med; // held in memory; fine since no process-death scenario here
+            return sheet;
+        }
+
+        public void setOnDeleteConfirmed(Runnable callback) {
+            this.onConfirmed = callback;
+        }
+
+        @Nullable
+        @Override
+        public View onCreateView(@NonNull LayoutInflater inflater,
+                @Nullable ViewGroup container,
+                @Nullable Bundle savedInstanceState) {
+            return inflater.inflate(R.layout.bottom_sheet_delete, container, false);
+        }
+
+        @Override
+        public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+            if (med == null) {
+                dismiss();
+                return;
+            }
+
+            // Build subtitle with bold med name
+            TextView subtitle = view.findViewById(R.id.tv_delete_subtitle);
+            String detail = med.dosage.isEmpty() ? med.frequency : med.dosage + " · " + med.frequency;
+            String full = "Are you sure you want to remove " + med.name
+                    + " (" + detail + ") from your schedule? This action cannot be undone.";
+            SpannableString span = new SpannableString(full);
+            int ns = full.indexOf(med.name), ne = ns + med.name.length();
+            span.setSpan(new StyleSpan(Typeface.BOLD), ns, ne, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            span.setSpan(new ForegroundColorSpan(
+                    ContextCompat.getColor(requireContext(), R.color.Ebony)),
+                    ns, ne, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            subtitle.setText(span);
+
+            // Medicine info card
+            ((TextView) view.findViewById(R.id.tv_med_name_card)).setText(med.name);
+            ((TextView) view.findViewById(R.id.tv_med_detail_card)).setText(detail);
+
+            // Confirm delete
+            view.findViewById(R.id.btn_confirm_delete).setOnClickListener(v -> {
+                AppDataBase db = AppDataBase.getInstance(requireContext());
+                new Thread(() -> {
+                    ReminderScheduler.cancelAlarm(requireContext(), med.name, med.time);
+                    db.medDAO().delete(med);
+                    if (!isAdded())
+                        return;
+                    requireActivity().runOnUiThread(() -> {
+                        dismiss();
+                        if (onConfirmed != null)
+                            onConfirmed.run();
+                    });
+                }).start();
+            });
+
+            view.findViewById(R.id.btn_cancel_delete).setOnClickListener(v -> dismiss());
+        }
     }
 
     // ─── Log Now flow ─────────────────────────────────────────────────────────
@@ -157,6 +204,8 @@ public class my_medicines extends Fragment {
         AppDataBase db = AppDataBase.getInstance(requireContext());
         new Thread(() -> {
             db.medDAO().incrementDaysTaken(med.id_meds);
+            if (!isAdded())
+                return;
             requireActivity().runOnUiThread(this::loadMedicines);
         }).start();
     }
@@ -202,8 +251,7 @@ public class my_medicines extends Fragment {
 
         @Override
         public void onBindViewHolder(@NonNull MedViewHolder holder, int position) {
-            MedEntity med = medList.get(position);
-            holder.bind(med, deleteListener, logNowListener);
+            holder.bind(medList.get(position), deleteListener, logNowListener);
         }
 
         @Override
@@ -230,52 +278,41 @@ public class my_medicines extends Fragment {
                 btnLogNow = itemView.findViewById(R.id.btn_log_now);
             }
 
-            void bind(MedEntity med,
-                    OnDeleteListener deleteListener,
-                    OnLogNowListener logNowListener) {
+            void bind(MedEntity med, OnDeleteListener dl, OnLogNowListener ll) {
                 tvName.setText(med.name);
                 tvTime.setText(med.time);
 
-                // Status badge
-                if (med.isContinuous) {
+                if (med.isContinuous)
                     tvStatus.setText("Ongoing");
-                } else if (med.daysTaken >= med.durationDays) {
+                else if (med.daysTaken >= med.durationDays)
                     tvStatus.setText("Completed");
-                } else {
+                else
                     tvStatus.setText("Upcoming");
-                }
 
-                // Progress bar
                 if (med.isContinuous) {
                     progressBar.setProgress(100);
                     tvDayCount.setText("Continuous");
                 } else {
-                    int progress = med.durationDays > 0
+                    int pct = med.durationDays > 0
                             ? (int) ((med.daysTaken / (float) med.durationDays) * 100)
                             : 0;
-                    progressBar.setProgress(progress);
+                    progressBar.setProgress(pct);
                     tvDayCount.setText("Day " + med.daysTaken + " of " + med.durationDays);
                 }
 
-                // Next dose hint
                 if (tvNextDose != null)
                     tvNextDose.setText("Next dose: " + med.time);
 
-                // Log Now visibility — only show if not yet completed
                 if (btnLogNow != null) {
                     boolean canLog = med.isContinuous || med.daysTaken < med.durationDays;
                     btnLogNow.setVisibility(canLog ? View.VISIBLE : View.GONE);
-                    btnLogNow.setOnClickListener(v -> logNowListener.onLogNow(med));
+                    btnLogNow.setOnClickListener(v -> ll.onLogNow(med));
                 }
-
-                // Edit (placeholder — can wire later)
                 if (btnEdit != null)
                     btnEdit.setOnClickListener(v -> {
-                        /* TODO: edit */ });
-
-                // Delete
+                        /* TODO */ });
                 if (btnDelete != null)
-                    btnDelete.setOnClickListener(v -> deleteListener.onDelete(med));
+                    btnDelete.setOnClickListener(v -> dl.onDelete(med));
             }
         }
     }

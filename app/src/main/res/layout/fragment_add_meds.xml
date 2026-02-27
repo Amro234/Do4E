@@ -192,6 +192,7 @@
                             android:orientation="vertical">
 
                             <TextView
+                                android:id="@+id/tv_selected_hour"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/manrope_bold"
@@ -225,6 +226,7 @@
                             android:orientation="vertical">
 
                             <TextView
+                                android:id="@+id/tv_selected_minute"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/manrope_bold"

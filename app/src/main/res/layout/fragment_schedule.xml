@@ -1,11 +1,261 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/frameLayout2"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/PolshiedWhite"
     tools:context=".ui.Schedule.Schedule">
 
+    <!-- Header -->
+    <LinearLayout
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="16dp"
+        app:layout_constraintTop_toTopOf="parent">
 
+        <ImageView
+            android:id="@+id/btn_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/baseline_arrow_back_24" />
 
-</FrameLayout>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="@font/manrope_bold"
+            android:text="@string/Schedule_Title"
+            android:textAlignment="center"
+            android:textColor="@color/Ebony"
+            android:textSize="20sp" />
+
+        <!-- Spacer to balance the back arrow -->
+        <View
+            android:layout_width="24dp"
+            android:layout_height="24dp" />
+
+    </LinearLayout>
+
+    <!-- Divider -->
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/BorderColor"
+        app:layout_constraintTop_toBottomOf="@id/header" />
+
+    <!-- Scrollable content -->
+    <ScrollView
+        android:id="@+id/scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:paddingBottom="100dp"
+        app:layout_constraintBottom_toTopOf="@id/btn_save_schedule"
+        app:layout_constraintTop_toBottomOf="@id/divider">
+
+        <LinearLayout
+            android:id="@+id/med_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Static first medicine card -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/card_first_med"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <!-- Medicine Name Label -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/manrope_bold"
+                        android:text="@string/Schedule_med_Name"
+                        android:textColor="@color/junglegreen"
+                        android:textSize="13sp" />
+
+                    <!-- Medicine Name Input -->
+                    <EditText
+                        android:id="@+id/et_med_name_first"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:layout_marginTop="6dp"
+                        android:background="@drawable/bg_rounded_input"
+                        android:fontFamily="@font/manrope_regular"
+                        android:hint="@string/Hint_med_Name"
+                        android:inputType="text"
+                        android:paddingHorizontal="14dp"
+                        android:textColor="@color/Ebony"
+                        android:textColorHint="@color/StateGray"
+                        android:textSize="15sp" />
+
+                    <!-- Time + Days Row -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:orientation="horizontal">
+
+                        <!-- Time Column -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/manrope_bold"
+                                android:text="@string/Schedule_Time"
+                                android:textColor="@color/junglegreen"
+                                android:textSize="13sp" />
+
+                            <Button
+                                android:id="@+id/btn_time_first"
+                                android:layout_width="match_parent"
+                                android:layout_height="48dp"
+                                android:layout_marginTop="6dp"
+                                android:background="@drawable/bg_rounded_input"
+                                android:backgroundTint="@color/MintBg"
+                                app:backgroundTint="@null"
+                                app:icon="@drawable/ic_clock"
+                                app:iconTint="@color/junglegreen"
+                                app:iconGravity="textStart"
+                                android:drawablePadding="8dp"
+                                android:fontFamily="@font/manrope_semibold"
+                                android:gravity="center_vertical|start"
+                                android:paddingHorizontal="12dp"
+                                android:text="@string/ans_time"
+                                android:textAllCaps="false"
+                                android:textColor="@color/junglegreen"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+
+                        <!-- Days Column -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/manrope_bold"
+                                android:text="@string/Schedule_Days"
+                                android:textColor="@color/junglegreen"
+                                android:textSize="13sp" />
+
+                            <EditText
+                                android:id="@+id/et_days_first"
+                                android:layout_width="match_parent"
+                                android:layout_height="48dp"
+                                android:layout_marginTop="6dp"
+                                android:background="@drawable/bg_rounded_input"
+                                android:fontFamily="@font/manrope_regular"
+                                android:inputType="number"
+                                android:paddingHorizontal="14dp"
+                                android:text="@string/ans_Days"
+                                android:textColor="@color/Ebony"
+                                android:textSize="15sp" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Dynamic cards will be added here by Schedule.java -->
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- FAB Add Button -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_add_med"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:src="@drawable/ic_plus_24px"
+        app:backgroundTint="@color/junglegreen"
+        app:layout_constraintBottom_toTopOf="@id/btn_save_schedule"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:tint="@color/white"
+        app:shapeAppearanceOverlay="@style/CircleAppearance"
+        />
+
+    <!-- Empty state hint (shown when only one card exists) -->
+    <LinearLayout
+        android:id="@+id/empty_hint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="100dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@id/btn_save_schedule"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <!--     Editing   -->
+        <ImageView
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:alpha="0.4"
+            android:src="@drawable/add_med"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:alpha="0.5"
+            android:fontFamily="@font/manrope_semibold"
+            android:text="@string/Tap_plus"
+            android:textColor="@color/StateGray"
+            android:textSize="13sp" />
+
+    </LinearLayout>
+
+    <!-- Save Schedule Button -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_save_schedule"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="16dp"
+        app:cornerRadius="16dp"
+        app:icon="@drawable/check_circle_24dp_icon"
+        app:iconGravity="textStart"
+        app:iconPadding="8dp"
+        app:iconTint="@color/white"
+        android:fontFamily="@font/manrope_bold"
+        android:text="@string/Save_Schedule"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:backgroundTint="@color/junglegreen"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

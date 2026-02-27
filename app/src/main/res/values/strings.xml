@@ -62,8 +62,8 @@
     <string name="pm">PM</string>
     <string name="hour">HOUR</string>
     <string name="minute">MINUTE</string>
-    <string name="default_hour">08</string>
-    <string name="default_minute">30</string>
+    <string name="default_hour">00</string>
+    <string name="default_minute">00</string>
     <string name="Medicine_type">Medicine Type</string>
     <string name="pill">Pill</string>
     <string name="syrup">Syrup</string>
@@ -89,6 +89,35 @@
     <string name="day_progress">DAY 5 OF 10</string>
 
     <!--    My Schedule    -->
+    <string name="Schedule_Title">My Schedule</string>
+    <string name="Schedule_med_Name">Medicine Name</string>
+    <string name="Hint_med_Name">e.g. Amoxicillin</string>
+    <string name="Schedule_Time">Time</string>
+    <string name="ans_time"> 08:00 AM </string>
+    <string name="Schedule_Days">Days</string>
+    <string name="ans_Days"> 7 </string>
+    <string name="Tap_plus"> Tap + to add another medication </string>
+    <string name="Save_Schedule"> Save Schedule </string>
+
+
+    <!-- Notification On Success -->
+    <string name="success_msg"> Medicine Saved\nSuccessfully !</string>
+    <string name="sub_success_msg"> We will remind you to take </string>
+    <string name="Medicine_notify"> Panadol </string>
+    <string name="at"> at </string>
+    <string name="time_notify"> 00:00 AM </string>
+    <string name="back_btn_home"> Back to Home </string>
+    <string name="view_btn_sch"> View Schedule </string>
+
+    <!-- bottom_sheet_layout Removing -->
+
+    <string name="del_msg">Delete Medicine ?</string>
+    <string name="sub_del_msg">Are you Sure to remove </string>
+    <string name="del_med_name"> Medicine </string>
+    <string name="del_dosage_med"> Dosage · Frequency </string>
+    <string name="del_btn_confirm"> Delete Medicine </string>
+    <string name="cancel_btn_confirm"> Cancel </string>
+    <string name="safety_protocol"> DOAEY SAFETY PROTOCOL </string>
 
 
 </resources>

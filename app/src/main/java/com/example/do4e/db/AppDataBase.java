@@ -6,7 +6,7 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
-@Database(entities = { MedEntity.class }, version = 1, exportSchema = false)
+@Database(entities = { MedEntity.class }, version = 3, exportSchema = false)
 public abstract class AppDataBase extends RoomDatabase {
 
     public abstract MedDAO medDAO();
@@ -19,7 +19,7 @@ public abstract class AppDataBase extends RoomDatabase {
                     context.getApplicationContext(),
                     AppDataBase.class,
                     "MedDatabase")
-                    .fallbackToDestructiveMigration()
+                    .fallbackToDestructiveMigration() // safe during dev — drops & recreates on schema change
                     .build();
         }
         return instance;

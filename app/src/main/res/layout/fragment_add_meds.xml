@@ -286,6 +286,141 @@
                     app:strokeWidth="0dp" />
             </com.google.android.material.button.MaterialButtonToggleGroup>
 
+            <!-- Duration Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:fontFamily="@font/manrope_semibold"
+                android:text="@string/Duration"
+                android:textColor="@color/junglegreen"
+                android:textSize="16sp" />
+
+            <!-- Continuous toggle chip -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/manrope_medium"
+                    android:text="@string/Continuous_label"
+                    android:textColor="@color/Fiord"
+                    android:textSize="14sp" />
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switch_continuous"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    app:thumbTint="@color/white"
+                    app:trackTint="@color/junglegreen" />
+
+            </LinearLayout>
+
+            <!-- Days input — hidden when Continuous is ON -->
+            <LinearLayout
+                android:id="@+id/layout_days_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <!-- Minus button -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_days_minus"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:padding="0dp"
+                    android:text="−"
+                    android:textColor="@color/junglegreen"
+                    android:textSize="20sp"
+                    app:cornerRadius="12dp"
+                    app:strokeColor="@color/junglegreen"
+                    app:strokeWidth="1dp" />
+
+                <!-- Days value display -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="12dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_rounded_input"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:paddingVertical="10dp">
+
+                    <TextView
+                        android:id="@+id/tv_days_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/manrope_extrabold"
+                        android:text="7"
+                        android:textColor="@color/junglegreen"
+                        android:textSize="28sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/manrope_medium"
+                        android:text="@string/Days_label"
+                        android:textColor="@color/StateGray"
+                        android:textSize="11sp" />
+                </LinearLayout>
+
+                <!-- Plus button -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_days_plus"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:padding="0dp"
+                    android:text="+"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    app:backgroundTint="@color/junglegreen"
+                    app:cornerRadius="12dp" />
+
+            </LinearLayout>
+
+            <!-- Continuous badge — shown when Continuous is ON -->
+            <LinearLayout
+                android:id="@+id/layout_continuous_badge"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_rounded_input"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingVertical="14dp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:src="@drawable/ic_clock"
+                    app:tint="@color/junglegreen" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:fontFamily="@font/manrope_semibold"
+                    android:text="@string/Continuous_badge"
+                    android:textColor="@color/junglegreen"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
             <!-- Medicine Type -->
 
             <TextView
@@ -471,6 +606,7 @@
             app:cornerRadius="30dp"
             app:icon="@drawable/check_circle_24dp_icon"
             app:iconTint="@color/white"
-            app:iconPadding="0dp"/>
+            app:iconPadding="4dp"
+            app:iconGravity="textStart"/>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

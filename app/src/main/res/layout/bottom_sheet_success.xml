@@ -33,59 +33,15 @@
         android:textSize="22sp" />
 
     <!-- Subtitle with spannable med name + time -->
-    <LinearLayout
+    <TextView
+        android:id="@+id/tv_success_subtitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:textAlignment="center"
-        android:layout_gravity="center_horizontal"
-        >
-
-        <TextView
-            android:layout_marginStart="16dp"
-            android:id="@+id/tv_success_subtitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:fontFamily="@font/manrope_regular"
-            android:gravity="center"
-            android:text="@string/sub_success_msg"
-            android:textColor="@color/StateGray"
-            android:textSize="14sp"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/Medicine_notify"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="2.5dp"
-            android:textColor="@color/junglegreen"
-            android:fontFamily="@font/manrope_semibold"
-            >
-        </TextView>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/at"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="2.5dp"
-            android:textColor="@color/StateGray"
-            android:fontFamily="@font/manrope_semibold"
-            >
-        </TextView>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/time_notify"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="2.5dp"
-            android:textColor="@color/junglegreen"
-            android:fontFamily="@font/manrope_semibold"
-            >
-        </TextView>
-
-    </LinearLayout>
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/manrope_regular"
+        android:gravity="center"
+        android:textColor="@color/StateGray"
+        android:textSize="14sp" />
 
     <!-- Back to Home button -->
     <Button

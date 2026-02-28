@@ -124,32 +124,39 @@
             android:src="@drawable/ic_delete"
             app:tint="@color/Crimson" />
 
-        <!-- Next dose label -->
-        <TextView
-            android:id="@+id/tv_next_dose"
+        <!-- Log Now + Next Dose container -->
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:fontFamily="@font/manrope_medium"
-            android:textColor="@color/StateGray"
-            android:textSize="12sp" />
+            android:gravity="end"
+            android:orientation="vertical">
 
-        <!-- Log Now button (shown for active meds) -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_log_now"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:layout_alignParentEnd="true"
-            android:backgroundTint="@color/junglegreen"
-            android:fontFamily="@font/manrope_bold"
-            android:paddingHorizontal="24dp"
-            android:text="Log Now"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:textSize="12sp"
-            android:visibility="gone"
-            app:cornerRadius="20dp" />
+            <!-- Log Now button (shown for active meds) -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_log_now"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:backgroundTint="@color/junglegreen"
+                android:fontFamily="@font/manrope_bold"
+                android:paddingHorizontal="24dp"
+                android:text="Log Now"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                android:visibility="gone"
+                app:cornerRadius="20dp" />
+
+            <!-- Next dose label -->
+            <TextView
+                android:id="@+id/tv_next_dose"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/manrope_medium"
+                android:textColor="@color/StateGray"
+                android:textSize="12sp" />
+        </LinearLayout>
     </RelativeLayout>
 
 </LinearLayout>

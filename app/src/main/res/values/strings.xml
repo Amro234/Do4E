@@ -47,8 +47,11 @@
     <string name="Dosage"> Dosage (e.g 500mg)</string>
     <string name="schedule_freQ"> Schedule and Frequency </string>
     <string name="Duration">Duration</string>
+    <string name="Number">1</string>
     <string name="Continuous_label">Continuous (no end date)</string>
     <string name="Days_label">DAYS</string>
+    <string name="Weeks_label">WEEKS</string>
+    <string name="Month_label">MONTHS</string>
     <string name="Continuous_badge">Ongoing · No End Date</string>
     <string name="once"> Once </string>
     <string name="Twice"> Twice </string>
@@ -76,6 +79,9 @@
 
     <!--    Meds_No_frag   -->
     <string name="Medicine_No"> There Is No Medicines Yet !</string>
+    <string name="Medicine_No_Daily"> Good you do not have any medicines monthly </string>
+    <string name="Medicine_No_Monthly"> Good you do not have any medicines monthly </string>
+    <string name="Medicine_NO_Weekly"> Good you do not have any medicines weekly </string>
     <string name="Adding_medicine"> Add Medicine </string>
 
     <!--    My Medicine   -->

@@ -9,6 +9,7 @@
 
     <!-- Header -->
     <LinearLayout
+        android:layout_marginTop="16dp"
         android:id="@+id/header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -34,97 +35,33 @@
             android:textSize="20sp" />
     </LinearLayout>
 
-    <!-- ─── Empty State (shown when no medicines) ────────────────────────── -->
+    <!-- ─── Tabs (Always Visible) ────────────────────────────────────────────── -->
     <LinearLayout
-        android:id="@+id/empty_state_layout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:padding="24dp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/btn_add_medicine"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/header"
-        app:layout_constraintVertical_bias="0.42">
-
-        <ImageView
-            android:layout_width="160dp"
-            android:layout_height="160dp"
-            android:src="@drawable/no_medicine_icon_vector" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:fontFamily="@font/manrope_bold"
-            android:text="@string/Medicine_No"
-            android:textAlignment="center"
-            android:textColor="@color/Ebony"
-            android:textSize="20sp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:fontFamily="@font/manrope_regular"
-            android:text="Add your first medicine to get started."
-            android:textAlignment="center"
-            android:textColor="@color/StateGray"
-            android:textSize="14sp" />
-    </LinearLayout>
-
-    <!-- Add Medicine bottom button (shown only in empty state) -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_add_medicine"
-        android:layout_width="0dp"
-        android:layout_height="58dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginEnd="32dp"
-        android:layout_marginBottom="32dp"
-        android:backgroundTint="@color/junglegreen"
-        android:fontFamily="@font/manrope_bold"
-        android:text="@string/Adding_medicine"
-        android:textAllCaps="false"
-        android:textColor="@color/white"
-        android:textSize="16sp"
-        android:visibility="gone"
-        app:cornerRadius="30dp"
-        app:icon="@drawable/ic_plus_24px"
-        app:iconGravity="textStart"
-        app:iconTint="@color/white"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <!-- ─── Medicine List (shown when medicines exist) ───────────────────── -->
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/medicines_list_layout"
+        android:id="@+id/tabs_container"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/header"
-        app:layout_constraintBottom_toBottomOf="parent">
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="16dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@+id/header">
 
-        <LinearLayout
+        <HorizontalScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:layout_height="56dp"
+            android:scrollbars="none"
+            android:fillViewport="true">
 
-            <!-- Tabs -->
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
                 android:background="@drawable/bg_tab_container"
                 android:orientation="horizontal"
-                android:padding="4dp">
+                android:padding="4dp"
+                android:minWidth="0dp">
 
                 <TextView
-                    android:layout_width="0dp"
+                    android:id="@+id/tab_today"
+                    android:layout_width="90dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"
                     android:gravity="center"
                     android:text="@string/tab_today"
                     android:background="@drawable/bg_tab_selected"
@@ -132,24 +69,61 @@
                     android:fontFamily="@font/manrope_semibold" />
 
                 <TextView
-                    android:layout_width="0dp"
+                    android:id="@+id/tab_daily"
+                    android:layout_width="90dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="Daily"
+                    android:textColor="@color/StateGray"
+                    android:fontFamily="@font/manrope_semibold" />
+
+                <TextView
+                    android:id="@+id/tab_weekly"
+                    android:layout_width="90dp"
+                    android:layout_height="match_parent"
                     android:gravity="center"
                     android:text="@string/tab_weekly"
                     android:textColor="@color/StateGray"
-                    android:fontFamily="@font/manrope_semibold"
-                    android:elevation="2dp" />
+                    android:fontFamily="@font/manrope_semibold" />
 
                 <TextView
-                    android:layout_width="0dp"
+                    android:id="@+id/tab_monthly"
+                    android:layout_width="90dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"
                     android:gravity="center"
                     android:text="@string/tab_monthly"
                     android:textColor="@color/StateGray"
                     android:fontFamily="@font/manrope_semibold" />
             </LinearLayout>
+        </HorizontalScrollView>
+    </LinearLayout>
+
+    <!-- ─── Empty State (using user's layout) ──────────────────────────────── -->
+    <include
+        layout="@layout/medicine_no"
+        android:id="@+id/medicine_no_layout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@+id/tabs_container"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- ─── Medicine List (shown when medicines exist) ───────────────────── -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/medicines_list_layout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@+id/tabs_container"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp">
 
             <TextView
                 android:layout_width="wrap_content"

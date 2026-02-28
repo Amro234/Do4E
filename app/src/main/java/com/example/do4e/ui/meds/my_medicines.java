@@ -35,10 +35,15 @@ public class my_medicines extends Fragment {
     private MedAdapter adapter;
 
     // Views toggled between empty state and list state
-    private View emptyStateLayout;
+    private View medicineNoLayout;
     private View medicinesListLayout;
     private View fabAdd;
     private View btnAddMedicine;
+    private TextView tvNoMedicineTitle;
+
+    private TextView tabToday, tabDaily, tabWeekly, tabMonthly;
+    private String currentTab = "Today"; // "Today", "Daily", "Weekly", "Monthly"
+    private List<MedEntity> allMeds = new ArrayList<>();
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -50,11 +55,21 @@ public class my_medicines extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // Check if we should start on a specific tab (e.g. Daily, Weekly, Monthly)
+        if (getArguments() != null) {
+            String startTab = getArguments().getString("start_interval");
+            if (startTab != null) {
+                // interval values (Daily/Weekly/Monthly) map to their own tabs
+                currentTab = startTab;
+            }
+        }
+
         // Cache views
-        emptyStateLayout = view.findViewById(R.id.empty_state_layout);
+        medicineNoLayout = view.findViewById(R.id.medicine_no_layout);
         medicinesListLayout = view.findViewById(R.id.medicines_list_layout);
-        fabAdd = view.findViewById(R.id.fab_add);
+        fabAdd = view.findViewById(R.id.fab_add); // Original ID
         btnAddMedicine = view.findViewById(R.id.btn_add_medicine);
+        tvNoMedicineTitle = view.findViewById(R.id.tv_no_medicine_title);
 
         // Back button
         view.findViewById(R.id.btn_back)
@@ -72,11 +87,86 @@ public class my_medicines extends Fragment {
         RecyclerView recyclerView = view.findViewById(R.id.rv_medicines);
         if (recyclerView != null) {
             recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-            adapter = new MedAdapter(new ArrayList<>(), this::onDeleteClicked, this::onLogNowClicked);
+            adapter = new MedAdapter(new ArrayList<>(), this::onDeleteClicked, this::onLogNowClicked,
+                    this::onEditClicked);
             recyclerView.setAdapter(adapter);
         }
 
+        // Tabs setup
+        tabToday = view.findViewById(R.id.tab_today);
+        tabDaily = view.findViewById(R.id.tab_daily);
+        tabWeekly = view.findViewById(R.id.tab_weekly);
+        tabMonthly = view.findViewById(R.id.tab_monthly);
+
+        tabToday.setOnClickListener(v -> selectTab("Today"));
+        tabDaily.setOnClickListener(v -> selectTab("Daily"));
+        tabWeekly.setOnClickListener(v -> selectTab("Weekly"));
+        tabMonthly.setOnClickListener(v -> selectTab("Monthly"));
+
         loadMedicines();
+    }
+
+    private void selectTab(String tab) {
+        currentTab = tab;
+        // Update UI
+        updateTabStyles();
+        // Filter list
+        filterAndDisplay();
+    }
+
+    private void updateTabStyles() {
+        // Today tab
+        boolean isToday = currentTab.equals("Today");
+        tabToday.setBackgroundResource(isToday ? R.drawable.bg_tab_selected : 0);
+        tabToday.setTextColor(ContextCompat.getColor(requireContext(),
+                isToday ? R.color.junglegreen : R.color.StateGray));
+
+        // Daily tab
+        boolean isDaily = currentTab.equals("Daily");
+        tabDaily.setBackgroundResource(isDaily ? R.drawable.bg_tab_selected : 0);
+        tabDaily.setTextColor(ContextCompat.getColor(requireContext(),
+                isDaily ? R.color.junglegreen : R.color.StateGray));
+
+        // Weekly tab
+        boolean isWeekly = currentTab.equals("Weekly");
+        tabWeekly.setBackgroundResource(isWeekly ? R.drawable.bg_tab_selected : 0);
+        tabWeekly.setTextColor(ContextCompat.getColor(requireContext(),
+                isWeekly ? R.color.junglegreen : R.color.StateGray));
+
+        // Monthly tab
+        boolean isMonthly = currentTab.equals("Monthly");
+        tabMonthly.setBackgroundResource(isMonthly ? R.drawable.bg_tab_selected : 0);
+        tabMonthly.setTextColor(ContextCompat.getColor(requireContext(),
+                isMonthly ? R.color.junglegreen : R.color.StateGray));
+    }
+
+    private void filterAndDisplay() {
+        List<MedEntity> filtered = new ArrayList<>();
+        for (MedEntity m : allMeds) {
+            // Migration guard: treat null interval as Daily
+            if (m.interval == null || m.interval.isEmpty()) {
+                m.interval = "Daily";
+            }
+            if (currentTab.equals("Today")) {
+                // Today: show ALL medicines regardless of interval
+                filtered.add(m);
+            } else {
+                // Daily / Weekly / Monthly: strictly show only exact match
+                if (m.interval.equals(currentTab)) {
+                    filtered.add(m);
+                }
+            }
+        }
+        if (adapter != null) {
+            adapter.updateList(filtered);
+        }
+        updateEmptyState(filtered.isEmpty());
+    }
+
+    private void onEditClicked(MedEntity med) {
+        Bundle args = new Bundle();
+        args.putInt("med_id", med.id_meds);
+        NavHostFragment.findNavController(this).navigate(R.id.action_my_medicines_to_add_meds, args);
     }
 
     @Override
@@ -94,9 +184,8 @@ public class my_medicines extends Fragment {
             if (!isAdded())
                 return; // guard: fragment may be detached
             requireActivity().runOnUiThread(() -> {
-                if (adapter != null)
-                    adapter.updateList(meds);
-                updateEmptyState(meds.isEmpty());
+                allMeds = meds;
+                filterAndDisplay();
             });
         }).start();
     }
@@ -107,13 +196,23 @@ public class my_medicines extends Fragment {
      */
     private void updateEmptyState(boolean isEmpty) {
         if (isEmpty) {
-            emptyStateLayout.setVisibility(View.VISIBLE);
-            btnAddMedicine.setVisibility(View.VISIBLE);
+            medicineNoLayout.setVisibility(View.VISIBLE);
             medicinesListLayout.setVisibility(View.GONE);
             fabAdd.setVisibility(View.GONE);
+
+            if (tvNoMedicineTitle != null) {
+                if (currentTab.equals("Daily")) {
+                    tvNoMedicineTitle.setText(R.string.Medicine_No_Daily);
+                } else if (currentTab.equals("Weekly")) {
+                    tvNoMedicineTitle.setText(R.string.Medicine_NO_Weekly);
+                } else if (currentTab.equals("Monthly")) {
+                    tvNoMedicineTitle.setText(R.string.Medicine_No_Monthly);
+                } else {
+                    tvNoMedicineTitle.setText(R.string.Medicine_No);
+                }
+            }
         } else {
-            emptyStateLayout.setVisibility(View.GONE);
-            btnAddMedicine.setVisibility(View.GONE);
+            medicineNoLayout.setVisibility(View.GONE);
             medicinesListLayout.setVisibility(View.VISIBLE);
             fabAdd.setVisibility(View.VISIBLE);
         }
@@ -224,16 +323,23 @@ public class my_medicines extends Fragment {
             void onLogNow(MedEntity med);
         }
 
+        public interface OnEditListener {
+            void onEdit(MedEntity med);
+        }
+
         private List<MedEntity> medList;
         private final OnDeleteListener deleteListener;
         private final OnLogNowListener logNowListener;
+        private final OnEditListener editListener;
 
         public MedAdapter(List<MedEntity> medList,
                 OnDeleteListener deleteListener,
-                OnLogNowListener logNowListener) {
+                OnLogNowListener logNowListener,
+                OnEditListener editListener) {
             this.medList = medList;
             this.deleteListener = deleteListener;
             this.logNowListener = logNowListener;
+            this.editListener = editListener;
         }
 
         public void updateList(List<MedEntity> newList) {
@@ -251,7 +357,7 @@ public class my_medicines extends Fragment {
 
         @Override
         public void onBindViewHolder(@NonNull MedViewHolder holder, int position) {
-            holder.bind(medList.get(position), deleteListener, logNowListener);
+            holder.bind(medList.get(position), deleteListener, logNowListener, editListener);
         }
 
         @Override
@@ -278,7 +384,7 @@ public class my_medicines extends Fragment {
                 btnLogNow = itemView.findViewById(R.id.btn_log_now);
             }
 
-            void bind(MedEntity med, OnDeleteListener dl, OnLogNowListener ll) {
+            void bind(MedEntity med, OnDeleteListener dl, OnLogNowListener ll, OnEditListener el) {
                 tvName.setText(med.name);
                 tvTime.setText(med.time);
 
@@ -300,8 +406,13 @@ public class my_medicines extends Fragment {
                     tvDayCount.setText("Day " + med.daysTaken + " of " + med.durationDays);
                 }
 
-                if (tvNextDose != null)
-                    tvNextDose.setText("Next dose: " + med.time);
+                if (tvNextDose != null) {
+                    String freqStr = "";
+                    if (med.interval != null && !med.interval.equals("Daily")) {
+                        freqStr = " (" + med.frequency + " x " + med.interval.replace("ly", "") + ")";
+                    }
+                    tvNextDose.setText("Next dose: " + med.time + freqStr);
+                }
 
                 if (btnLogNow != null) {
                     boolean canLog = med.isContinuous || med.daysTaken < med.durationDays;
@@ -309,8 +420,7 @@ public class my_medicines extends Fragment {
                     btnLogNow.setOnClickListener(v -> ll.onLogNow(med));
                 }
                 if (btnEdit != null)
-                    btnEdit.setOnClickListener(v -> {
-                        /* TODO */ });
+                    btnEdit.setOnClickListener(v -> el.onEdit(med));
                 if (btnDelete != null)
                     btnDelete.setOnClickListener(v -> dl.onDelete(med));
             }

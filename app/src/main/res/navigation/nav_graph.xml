@@ -16,6 +16,10 @@
         android:name="com.example.do4e.ui.meds.my_medicines"
         android:label="My Medicines"
         tools:layout="@layout/fragment_my_medicines">
+        <argument
+            android:name="start_interval"
+            app:argType="string"
+            android:defaultValue="Daily" />
         <action
             android:id="@+id/action_my_medicines_to_add_meds"
             app:destination="@id/add_meds"
@@ -29,7 +33,13 @@
         android:id="@+id/add_meds"
         android:name="com.example.do4e.ui.meds.add_meds"
         android:label="Add Medicine"
-        tools:layout="@layout/fragment_add_meds" />
+        tools:layout="@layout/fragment_add_meds">
+        <argument
+            android:id="@+id/med_id"
+            android:name="med_id"
+            app:argType="integer"
+            android:defaultValue="-1" />
+    </fragment>
 
     <fragment
         android:id="@+id/meds_no"

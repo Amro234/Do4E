@@ -214,7 +214,7 @@ public class Schedule extends Fragment {
             // Save first static card
             int days = firstDays.isEmpty() ? 0 : Integer.parseInt(firstDays);
             int[] hmp = parseTimeStr(firstTime);
-            MedEntity first = new MedEntity(firstName, "", firstTime, hmp[0], hmp[1], "Once",
+            MedEntity first = new MedEntity(firstName, "", firstTime, hmp[0], hmp[1], "Daily", "1 time",
                     days, days == 0, "Pill", "", "");
             db.medDAO().insert(first);
 
@@ -246,7 +246,7 @@ public class Schedule extends Fragment {
 
                 int d = dStr.isEmpty() ? 0 : Integer.parseInt(dStr);
                 int[] hm = parseTimeStr(time);
-                MedEntity med = new MedEntity(name, "", time, hm[0], hm[1], "Once",
+                MedEntity med = new MedEntity(name, "", time, hm[0], hm[1], "Daily", "1 time",
                         d, d == 0, "Pill", "", "");
                 db.medDAO().insert(med);
 

@@ -18,7 +18,8 @@ public class MedEntity {
     public String time; // Formatted time, e.g. "08:30 AM"
     public int hour; // 0-23
     public int minute; // 0-59
-    public String frequency; // "Once" | "Twice" | "Thrice"
+    public String interval; // "Daily" | "Weekly" | "Monthly"
+    public String frequency; // 1 | 2 | 3 (times per interval)
 
     // ── Duration ─────────────────────────────────────────────
     public int durationDays; // Number of days, e.g. 7. 0 = continuous
@@ -42,13 +43,14 @@ public class MedEntity {
 
     @Ignore
     public MedEntity(String name, String dosage, String time, int hour, int minute,
-            String frequency, int durationDays, boolean isContinuous,
+            String interval, String frequency, int durationDays, boolean isContinuous,
             String medType, String instruction, String notes) {
         this.name = name;
         this.dosage = dosage;
         this.time = time;
         this.hour = hour;
         this.minute = minute;
+        this.interval = interval;
         this.frequency = frequency;
         this.durationDays = durationDays;
         this.isContinuous = isContinuous;

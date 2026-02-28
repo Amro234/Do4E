@@ -116,6 +116,7 @@
         android:layout_marginTop="24dp"
         app:icon="@drawable/ic_delete"
         app:iconGravity="textStart"
+        app:iconTint="@color/white"
         android:drawableTint="@color/white"
         android:fontFamily="@font/manrope_bold"
         android:text="@string/del_btn_confirm"

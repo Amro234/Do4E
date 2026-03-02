@@ -1,6 +1,7 @@
 package com.example.do4e.ui.meds;
 
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -12,6 +13,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.google.android.material.datepicker.MaterialDatePicker;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -50,6 +58,9 @@ public class add_meds extends Fragment {
     private int daysCount = 1;
     private boolean isContinuous = false;
 
+    private long selectedStartDate = System.currentTimeMillis();
+    private TextView tvStartDate;
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
@@ -59,6 +70,25 @@ public class add_meds extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        // ── Start Date selection ───────────────────────────────────────────
+        tvStartDate = view.findViewById(R.id.tv_start_date_value);
+        tvStartDate.setText("Today ("
+                + new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(new Date(selectedStartDate)) + ")");
+
+        view.findViewById(R.id.date_selection_container).setOnClickListener(v -> {
+            MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker()
+                    .setTitleText("Select Start Date")
+                    .setSelection(selectedStartDate)
+                    .build();
+
+            datePicker.addOnPositiveButtonClickListener(selection -> {
+                selectedStartDate = selection;
+                tvStartDate
+                        .setText(new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(new Date(selection)));
+            });
+            datePicker.show(getParentFragmentManager(), "DATE_PICKER");
+        });
 
         // ── Back button ──────────────────────────────────────────────────────
         view.findViewById(R.id.btn_back)
@@ -231,97 +261,109 @@ public class add_meds extends Fragment {
     private void loadMedicineData(View view) {
         AppDataBase db = AppDataBase.getInstance(requireContext());
         new Thread(() -> {
+            // 1. Do background database work here
             MedEntity med = db.medDAO().getById(selectedMedId);
-            if (med == null)
-                return;
 
-            requireActivity().runOnUiThread(() -> {
-                // Name
-                TextInputLayout nameLayout = view.findViewById(R.id.name_meds);
-                if (nameLayout.getEditText() != null)
-                    nameLayout.getEditText().setText(med.name);
+            // 2. CHECK LIFECYCLE BEFORE TOUCHING UI
+            if (isAdded() && getActivity() != null) {
+                requireActivity().runOnUiThread(() -> {
+                    // 3. Safe to update UI
+                    if (med == null)
+                        return;
 
-                // Dosage
-                TextInputLayout dosageLayout = view.findViewById(R.id.dosage_med);
-                if (dosageLayout.getEditText() != null)
-                    dosageLayout.getEditText().setText(med.dosage);
+                    // Name
+                    TextInputLayout nameLayout = view.findViewById(R.id.name_meds);
+                    if (nameLayout.getEditText() != null)
+                        nameLayout.getEditText().setText(med.name);
 
-                // Time
-                selectedHour = med.hour;
-                selectedMinute = med.minute;
-                updateTimeUI(view);
+                    // Dosage
+                    TextInputLayout dosageLayout = view.findViewById(R.id.dosage_med);
+                    if (dosageLayout.getEditText() != null)
+                        dosageLayout.getEditText().setText(med.dosage);
 
-                // Interval
-                MaterialButtonToggleGroup toggleInterval = view.findViewById(R.id.toggle_interval);
-                if (med.interval != null) {
-                    if (med.interval.equals("Daily"))
-                        toggleInterval.check(R.id.btn_daily);
-                    else if (med.interval.equals("Weekly"))
-                        toggleInterval.check(R.id.btn_weekly_interval);
-                    else if (med.interval.equals("Monthly"))
-                        toggleInterval.check(R.id.btn_monthly_interval);
-                }
+                    // Time
+                    selectedHour = med.hour;
+                    selectedMinute = med.minute;
+                    updateTimeUI(view);
 
-                // Frequency
-                MaterialButtonToggleGroup toggleFreq = view.findViewById(R.id.toggle_frequency);
-                if ("1 time".equals(med.frequency))
-                    toggleFreq.check(R.id.btn_once);
-                else if ("2 times".equals(med.frequency))
-                    toggleFreq.check(R.id.btn_twice);
-                else if ("3 times".equals(med.frequency))
-                    toggleFreq.check(R.id.btn_thrice);
-                frequency = med.frequency;
+                    // Interval
+                    MaterialButtonToggleGroup toggleInterval = view.findViewById(R.id.toggle_interval);
+                    if (med.interval != null) {
+                        if (med.interval.equals("Daily"))
+                            toggleInterval.check(R.id.btn_daily);
+                        else if (med.interval.equals("Weekly"))
+                            toggleInterval.check(R.id.btn_weekly_interval);
+                        else if (med.interval.equals("Monthly"))
+                            toggleInterval.check(R.id.btn_monthly_interval);
+                    }
 
-                // Continuous
-                SwitchMaterial switchContinuous = view.findViewById(R.id.switch_continuous);
-                switchContinuous.setChecked(med.isContinuous);
+                    // Frequency
+                    MaterialButtonToggleGroup toggleFreq = view.findViewById(R.id.toggle_frequency);
+                    if ("1 time".equals(med.frequency))
+                        toggleFreq.check(R.id.btn_once);
+                    else if ("2 times".equals(med.frequency))
+                        toggleFreq.check(R.id.btn_twice);
+                    else if ("3 times".equals(med.frequency))
+                        toggleFreq.check(R.id.btn_thrice);
+                    frequency = med.frequency;
 
-                // Days
-                if (!med.isContinuous) {
-                    daysCount = med.durationDays;
-                    ((TextView) view.findViewById(R.id.tv_days_value)).setText(String.valueOf(daysCount));
-                }
+                    // Continuous
+                    SwitchMaterial switchContinuous = view.findViewById(R.id.switch_continuous);
+                    switchContinuous.setChecked(med.isContinuous);
 
-                // Type
-                MaterialButton btnPill = view.findViewById(R.id.btn_pill);
-                MaterialButton btnSyrup = view.findViewById(R.id.btn_syrup);
-                MaterialButton btnSyringe = view.findViewById(R.id.btn_syringe);
+                    // Days
+                    if (!med.isContinuous) {
+                        daysCount = med.durationDays;
+                        ((TextView) view.findViewById(R.id.tv_days_value)).setText(String.valueOf(daysCount));
+                    }
 
-                setTypeButtonUnselected(btnPill);
-                setTypeButtonUnselected(btnSyrup);
-                setTypeButtonUnselected(btnSyringe);
+                    // Start Date
+                    selectedStartDate = med.startDate != 0 ? med.startDate : System.currentTimeMillis();
+                    tvStartDate.setText(new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
+                            .format(new Date(selectedStartDate)));
 
-                if ("Pill".equals(med.medType))
-                    setTypeButtonSelected(btnPill);
-                else if ("Syrup".equals(med.medType))
-                    setTypeButtonSelected(btnSyrup);
-                else if ("Syringe".equals(med.medType))
-                    setTypeButtonSelected(btnSyringe);
-                medType = med.medType;
+                    // Type
+                    MaterialButton btnPill = view.findViewById(R.id.btn_pill);
+                    MaterialButton btnSyrup = view.findViewById(R.id.btn_syrup);
+                    MaterialButton btnSyringe = view.findViewById(R.id.btn_syringe);
 
-                // Instructions
-                MaterialButton btnBefore = view.findViewById(R.id.btn_before_food);
-                MaterialButton btnDuring = view.findViewById(R.id.btn_during_food);
-                MaterialButton btnAfter = view.findViewById(R.id.btn_after_food);
+                    setTypeButtonUnselected(btnPill);
+                    setTypeButtonUnselected(btnSyrup);
+                    setTypeButtonUnselected(btnSyringe);
 
-                setTypeButtonUnselected(btnBefore);
-                setTypeButtonUnselected(btnDuring);
-                setTypeButtonUnselected(btnAfter);
+                    if ("Pill".equals(med.medType))
+                        setTypeButtonSelected(btnPill);
+                    else if ("Syrup".equals(med.medType))
+                        setTypeButtonSelected(btnSyrup);
+                    else if ("Syringe".equals(med.medType))
+                        setTypeButtonSelected(btnSyringe);
+                    medType = med.medType;
 
-                if ("Before Food".equals(med.instruction))
-                    setTypeButtonSelected(btnBefore);
-                else if ("During Food".equals(med.instruction))
-                    setTypeButtonSelected(btnDuring);
-                else if ("After Food".equals(med.instruction))
-                    setTypeButtonSelected(btnAfter);
-                instruction = med.instruction;
+                    // Instructions
+                    MaterialButton btnBefore = view.findViewById(R.id.btn_before_food);
+                    MaterialButton btnDuring = view.findViewById(R.id.btn_during_food);
+                    MaterialButton btnAfter = view.findViewById(R.id.btn_after_food);
 
-                // Notes
-                TextInputLayout notesLayout = view.findViewById(R.id.notes_med);
-                if (notesLayout.getEditText() != null)
-                    notesLayout.getEditText().setText(med.notes);
-            });
+                    setTypeButtonUnselected(btnBefore);
+                    setTypeButtonUnselected(btnDuring);
+                    setTypeButtonUnselected(btnAfter);
+
+                    if ("Before Food".equals(med.instruction))
+                        setTypeButtonSelected(btnBefore);
+                    else if ("During Food".equals(med.instruction))
+                        setTypeButtonSelected(btnDuring);
+                    else if ("After Food".equals(med.instruction))
+                        setTypeButtonSelected(btnAfter);
+                    instruction = med.instruction;
+
+                    // Notes
+                    TextInputLayout notesLayout = view.findViewById(R.id.notes_med);
+                    if (notesLayout.getEditText() != null)
+                        notesLayout.getEditText().setText(med.notes);
+                });
+            }
         }).start();
+
     }
 
     private void updateTimeUI(View view) {
@@ -375,6 +417,7 @@ public class add_meds extends Fragment {
 
         MedEntity med = new MedEntity(name, dosage, timeStr, selectedHour, selectedMinute,
                 interval, frequency, finalDays, isContinuous, medType, instruction, notes);
+        med.startDate = selectedStartDate;
 
         if (selectedMedId != -1) {
             med.id_meds = selectedMedId;
@@ -385,19 +428,34 @@ public class add_meds extends Fragment {
         // Capture navController on the main thread before entering background work
         NavController navController = NavHostFragment.findNavController(this);
 
+        Context appContext = requireContext().getApplicationContext();
+
         new Thread(() -> {
-            if (selectedMedId == -1) {
-                db.medDAO().insert(med);
-            } else {
-                db.medDAO().update(med);
+            try {
+                if (selectedMedId == -1) {
+                    med.id_meds = (int) db.medDAO().insert(med);
+                } else {
+                    db.medDAO().update(med);
+                }
+
+                ReminderScheduler.schedule(appContext, med);
+
+                if (isAdded() && getActivity() != null) {
+                    requireActivity().runOnUiThread(() -> {
+                        showSuccessSheet(name, timeStr, interval, navController);
+                    });
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                if (isAdded() && getActivity() != null) {
+                    requireActivity().runOnUiThread(() -> {
+                        android.widget.Toast.makeText(appContext, "Error saving: " + e.getMessage(),
+                                android.widget.Toast.LENGTH_LONG).show();
+                    });
+                }
             }
-
-            // Schedule daily reminder
-            int notifId = (name + timeStr).hashCode();
-            ReminderScheduler.schedule(requireContext(), name, timeStr, notifId);
-
-            requireActivity().runOnUiThread(() -> showSuccessSheet(name, timeStr, interval, navController));
         }).start();
+
     }
 
     // ─── Success bottom sheet ─────────────────────────────────────────────────

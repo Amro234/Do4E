@@ -15,7 +15,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -67,7 +66,7 @@ public class my_medicines extends Fragment {
         // Cache views
         medicineNoLayout = view.findViewById(R.id.medicine_no_layout);
         medicinesListLayout = view.findViewById(R.id.medicines_list_layout);
-        fabAdd = view.findViewById(R.id.fab_add); // Original ID
+        fabAdd = view.findViewById(R.id.fab_add);
         btnAddMedicine = view.findViewById(R.id.btn_add_medicine);
         tvNoMedicineTitle = view.findViewById(R.id.tv_no_medicine_title);
 
@@ -108,32 +107,26 @@ public class my_medicines extends Fragment {
 
     private void selectTab(String tab) {
         currentTab = tab;
-        // Update UI
         updateTabStyles();
-        // Filter list
         filterAndDisplay();
     }
 
     private void updateTabStyles() {
-        // Today tab
         boolean isToday = currentTab.equals("Today");
         tabToday.setBackgroundResource(isToday ? R.drawable.bg_tab_selected : 0);
         tabToday.setTextColor(ContextCompat.getColor(requireContext(),
                 isToday ? R.color.junglegreen : R.color.StateGray));
 
-        // Daily tab
         boolean isDaily = currentTab.equals("Daily");
         tabDaily.setBackgroundResource(isDaily ? R.drawable.bg_tab_selected : 0);
         tabDaily.setTextColor(ContextCompat.getColor(requireContext(),
                 isDaily ? R.color.junglegreen : R.color.StateGray));
 
-        // Weekly tab
         boolean isWeekly = currentTab.equals("Weekly");
         tabWeekly.setBackgroundResource(isWeekly ? R.drawable.bg_tab_selected : 0);
         tabWeekly.setTextColor(ContextCompat.getColor(requireContext(),
                 isWeekly ? R.color.junglegreen : R.color.StateGray));
 
-        // Monthly tab
         boolean isMonthly = currentTab.equals("Monthly");
         tabMonthly.setBackgroundResource(isMonthly ? R.drawable.bg_tab_selected : 0);
         tabMonthly.setTextColor(ContextCompat.getColor(requireContext(),
@@ -142,16 +135,17 @@ public class my_medicines extends Fragment {
 
     private void filterAndDisplay() {
         List<MedEntity> filtered = new ArrayList<>();
+        long today = System.currentTimeMillis();
         for (MedEntity m : allMeds) {
-            // Migration guard: treat null interval as Daily
             if (m.interval == null || m.interval.isEmpty()) {
                 m.interval = "Daily";
             }
             if (currentTab.equals("Today")) {
-                // Today: show ALL medicines regardless of interval
-                filtered.add(m);
+                // Show if it has started and hasn't expired
+                if (today >= m.startDate && (m.isContinuous || m.daysTaken < m.durationDays)) {
+                    filtered.add(m);
+                }
             } else {
-                // Daily / Weekly / Monthly: strictly show only exact match
                 if (m.interval.equals(currentTab)) {
                     filtered.add(m);
                 }
@@ -179,21 +173,21 @@ public class my_medicines extends Fragment {
 
     private void loadMedicines() {
         AppDataBase db = AppDataBase.getInstance(requireContext());
+        long today = System.currentTimeMillis();
         new Thread(() -> {
+            // Fetch all meds so that future meds show in Daily/Weekly/Monthly
             List<MedEntity> meds = db.medDAO().getAllMeds();
-            if (!isAdded())
-                return; // guard: fragment may be detached
-            requireActivity().runOnUiThread(() -> {
-                allMeds = meds;
-                filterAndDisplay();
-            });
+            // 2. CHECK LIFECYCLE BEFORE TOUCHING UI
+            if (isAdded() && getActivity() != null) {
+                requireActivity().runOnUiThread(() -> {
+                    // 3. Safe to update UI
+                    allMeds = meds;
+                    filterAndDisplay();
+                });
+            }
         }).start();
     }
 
-    /**
-     * Toggles between the empty state and the list state
-     * purely via visibility — no fragment navigation, no blink.
-     */
     private void updateEmptyState(boolean isEmpty) {
         if (isEmpty) {
             medicineNoLayout.setVisibility(View.VISIBLE);
@@ -221,23 +215,23 @@ public class my_medicines extends Fragment {
     // ─── Delete flow ──────────────────────────────────────────────────────────
 
     private void onDeleteClicked(MedEntity med) {
-        DeleteSheet sheet = DeleteSheet.newInstance(med);
+        // Pass the primitive ID instead of the whole object
+        DeleteSheet sheet = DeleteSheet.newInstance(med.id_meds);
         sheet.setOnDeleteConfirmed(() -> loadMedicines());
         sheet.show(getParentFragmentManager(), "delete_sheet");
     }
 
-    /** Must be public static so Android can recreate it from instance state. */
-    public static class DeleteSheet extends com.google.android.material.bottomsheet.BottomSheetDialogFragment {
+    public static class DeleteSheet extends BottomSheetDialogFragment {
 
         private Runnable onConfirmed;
+        private MedEntity med; // Fetched safely from DB
 
-        // We pass only primitives through the Bundle; hold the MedEntity via a static
-        // pass-through since it's not Parcelable. We use a simple holder approach.
-        private MedEntity med;
-
-        public static DeleteSheet newInstance(MedEntity med) {
+        // <-- UPDATED TO PASS ID VIA BUNDLE -->
+        public static DeleteSheet newInstance(int medId) {
             DeleteSheet sheet = new DeleteSheet();
-            sheet.med = med; // held in memory; fine since no process-death scenario here
+            Bundle args = new Bundle();
+            args.putInt("MED_ID", medId);
+            sheet.setArguments(args);
             return sheet;
         }
 
@@ -255,41 +249,78 @@ public class my_medicines extends Fragment {
 
         @Override
         public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-            if (med == null) {
+            if (getArguments() == null) {
                 dismiss();
                 return;
             }
 
-            // Build subtitle with bold med name
+            int medId = getArguments().getInt("MED_ID");
+            AppDataBase db = AppDataBase.getInstance(requireContext());
+
+            // <-- FETCH DATA FROM DB TO PREVENT PROCESS DEATH CRASH -->
+            new Thread(() -> {
+                try {
+                    // Try direct fetch if you have getById in your DAO
+                    med = db.medDAO().getById(medId);
+                } catch (Exception e) {
+                    // Fallback in case getById isn't set up: find it manually
+                    for (MedEntity m : db.medDAO().getAllMeds()) {
+                        if (m.id_meds == medId) {
+                            med = m;
+                            break;
+                        }
+                    }
+                }
+
+                // 2. CHECK LIFECYCLE BEFORE TOUCHING UI
+                if (isAdded() && getActivity() != null) {
+                    requireActivity().runOnUiThread(() -> {
+                        // 3. Safe to update UI
+                        if (med == null) {
+                            dismiss();
+                            return;
+                        }
+                        setupSheetUI(view);
+                    });
+                }
+            }).start();
+        }
+
+        private void setupSheetUI(View view) {
             TextView subtitle = view.findViewById(R.id.tv_delete_subtitle);
-            String detail = med.dosage.isEmpty() ? med.frequency : med.dosage + " · " + med.frequency;
+            String detail = (med.dosage == null || med.dosage.isEmpty()) ? med.frequency
+                    : med.dosage + " · " + med.frequency;
             String full = "Are you sure you want to remove " + med.name
                     + " (" + detail + ") from your schedule? This action cannot be undone.";
             SpannableString span = new SpannableString(full);
-            int ns = full.indexOf(med.name), ne = ns + med.name.length();
-            span.setSpan(new StyleSpan(Typeface.BOLD), ns, ne, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            span.setSpan(new ForegroundColorSpan(
-                    ContextCompat.getColor(requireContext(), R.color.Ebony)),
-                    ns, ne, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            int ns = full.indexOf(med.name);
+            if (ns != -1) {
+                int ne = ns + med.name.length();
+                span.setSpan(new StyleSpan(Typeface.BOLD), ns, ne, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                span.setSpan(new ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.Ebony)),
+                        ns, ne, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            }
             subtitle.setText(span);
 
-            // Medicine info card
             ((TextView) view.findViewById(R.id.tv_med_name_card)).setText(med.name);
             ((TextView) view.findViewById(R.id.tv_med_detail_card)).setText(detail);
 
-            // Confirm delete
             view.findViewById(R.id.btn_confirm_delete).setOnClickListener(v -> {
                 AppDataBase db = AppDataBase.getInstance(requireContext());
                 new Thread(() -> {
                     ReminderScheduler.cancelAlarm(requireContext(), med.name, med.time);
                     db.medDAO().delete(med);
-                    if (!isAdded())
-                        return;
-                    requireActivity().runOnUiThread(() -> {
-                        dismiss();
-                        if (onConfirmed != null)
-                            onConfirmed.run();
-                    });
+
+                    // 2. CHECK LIFECYCLE BEFORE TOUCHING UI
+                    if (isAdded() && getActivity() != null) {
+                        requireActivity().runOnUiThread(() -> {
+                            // 3. Safe to update UI
+                            dismiss();
+                            if (onConfirmed != null)
+                                onConfirmed.run();
+                        });
+                    }
                 }).start();
             });
 
@@ -303,9 +334,13 @@ public class my_medicines extends Fragment {
         AppDataBase db = AppDataBase.getInstance(requireContext());
         new Thread(() -> {
             db.medDAO().incrementDaysTaken(med.id_meds);
-            if (!isAdded())
-                return;
-            requireActivity().runOnUiThread(this::loadMedicines);
+            // 2. CHECK LIFECYCLE BEFORE TOUCHING UI
+            if (isAdded() && getActivity() != null) {
+                requireActivity().runOnUiThread(() -> {
+                    // 3. Safe to update UI
+                    loadMedicines();
+                });
+            }
         }).start();
     }
 

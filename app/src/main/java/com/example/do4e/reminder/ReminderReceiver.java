@@ -2,6 +2,7 @@ package com.example.do4e.reminder;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -19,6 +20,7 @@ public class ReminderReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         String medName = intent.getStringExtra("med_name");
         int notifId = intent.getIntExtra("notif_id", 0);
+        int medId = intent.getIntExtra("med_id", -1);
 
         NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -32,12 +34,19 @@ public class ReminderReceiver extends BroadcastReceiver {
             manager.createNotificationChannel(channel);
         }
 
+        Intent takenIntent = new Intent(context, MedicineActionReceiver.class);
+        takenIntent.putExtra("med_id", medId);
+        takenIntent.putExtra("notif_id", notifId);
+        PendingIntent takenPendingIntent = PendingIntent.getBroadcast(context, notifId,
+                takenIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_plus_24px)
-                .setContentTitle("💊 Medication Reminder")
-                .setContentText("Time to take: " + medName)
+                .setSmallIcon(R.drawable.pill_24dp_icon)
+                .setContentTitle("Medicine Time!")
+                .setContentText("Don't forget to take " + medName)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setAutoCancel(true);
+                .setAutoCancel(true)
+                .addAction(R.drawable.check_24dp_icon, "Mark as Taken", takenPendingIntent);
 
         manager.notify(notifId, builder.build());
 

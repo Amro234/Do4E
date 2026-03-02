@@ -16,7 +16,7 @@ public interface MedDAO {
     // ── Write operations ──────────────────────────────────────
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(MedEntity med);
+    long insert(MedEntity med);
 
     @Update
     void update(MedEntity med);
@@ -50,6 +50,9 @@ public interface MedDAO {
     @Transaction
     @Query("SELECT * FROM meds WHERE isContinuous = 1 OR daysTaken < durationDays ORDER BY hour ASC, minute ASC")
     List<MedEntity> getActiveMeds();
+
+    @Query("SELECT * FROM meds WHERE (:today >= startDate) AND (isContinuous = 1 OR daysTaken < durationDays) ORDER BY hour ASC, minute ASC")
+    List<MedEntity> getActiveMedsForToday(long today);
 
     /** Increment daysTaken by 1 when user logs a dose */
     @Query("UPDATE meds SET daysTaken = daysTaken + 1 WHERE id_meds = :id")

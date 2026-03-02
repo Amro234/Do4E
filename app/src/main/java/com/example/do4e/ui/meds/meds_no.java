@@ -37,9 +37,12 @@ public class meds_no extends Fragment {
         AppDataBase db = AppDataBase.getInstance(requireContext());
         new Thread(() -> {
             int count = db.medDAO().getAllMeds().size();
-            if (count > 0 && isAdded()) {
-                requireActivity().runOnUiThread(
-                        () -> NavHostFragment.findNavController(this).navigate(R.id.action_meds_no_to_my_medicines));
+            if (isAdded() && getActivity() != null) {
+                if (count > 0) {
+                    requireActivity().runOnUiThread(
+                            () -> NavHostFragment.findNavController(this)
+                                    .navigate(R.id.action_meds_no_to_my_medicines));
+                }
             }
         }).start();
     }

@@ -37,6 +37,8 @@ public class MedEntity {
     // ── Progress tracking (used by my_medicines screen) ──────
     public int daysTaken; // How many days the user has already taken it
 
+    public long startDate; // Start date of the medication
+
     /** No-arg constructor for Room */
     public MedEntity() {
     }

@@ -79,7 +79,7 @@
 
     <!--    Meds_No_frag   -->
     <string name="Medicine_No"> There Is No Medicines Yet !</string>
-    <string name="Medicine_No_Daily"> Good you do not have any medicines monthly </string>
+    <string name="Medicine_No_Daily"> Good you do not have any medicines Daily </string>
     <string name="Medicine_No_Monthly"> Good you do not have any medicines monthly </string>
     <string name="Medicine_NO_Weekly"> Good you do not have any medicines weekly </string>
     <string name="Adding_medicine"> Add Medicine </string>

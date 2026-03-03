@@ -32,6 +32,7 @@
             android:exported="false" />
 
         <receiver android:name=".reminder.ReminderReceiver" />
+        <receiver android:name=".reminder.MedicineActionReceiver" />
     </application>
 
 </manifest>

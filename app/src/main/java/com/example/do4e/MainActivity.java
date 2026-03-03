@@ -1,9 +1,12 @@
 package com.example.do4e;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -23,24 +26,43 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Request notification permission (Android 13+)
+        // ── Runtime permission: POST_NOTIFICATIONS (Android 13+) ─────────
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(this,
-                    Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                    Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this,
-                        new String[] { Manifest.permission.POST_NOTIFICATIONS }, 1);
+                        new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1);
             }
         }
 
-        // Setup Navigation Component
+        // ── Runtime permission: USE_FULL_SCREEN_INTENT (Android 14+) ─────
+        // Without this the fullScreenIntent in ReminderReceiver is silently
+        // downgraded to a regular heads-up notification.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {  // API 34
+            android.app.NotificationManager nm =
+                    (android.app.NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            if (nm != null && !nm.canUseFullScreenIntent()) {
+                // Open the system settings page so the user can grant it.
+                // We only ask once per cold-start; a real production app would
+                // show a rationale dialog first.
+                Intent intent = new Intent(Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT);
+                intent.setData(Uri.parse("package:" + getPackageName()));
+                startActivity(intent);
+            }
+        }
+
+        // ── Navigation Component setup ────────────────────────────────────
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.nav_host_fragment);
+
         if (navHostFragment != null) {
             navController = navHostFragment.getNavController();
+
             BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
             NavigationUI.setupWithNavController(bottomNav, navController);
 
-            // Hide bottom navigation ONLY for the Add Medicine screen
+            // Hide bottom nav on the Add Medicine screen
             navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
                 if (destination.getId() == R.id.add_meds) {
                     bottomNav.setVisibility(android.view.View.GONE);
@@ -53,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onSupportNavigateUp() {
-        return navController != null && navController.navigateUp() || super.onSupportNavigateUp();
+        return navController != null && navController.navigateUp()
+                || super.onSupportNavigateUp();
     }
 }

@@ -105,6 +105,7 @@
 
 
             <ImageView
+                android:id="@+id/iv_alarm_med_photo"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:contentDescription="Medicine photo"
@@ -149,9 +150,12 @@
                         android:id="@+id/tv_alarm_time"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:background="@drawable/time_background_mint"
                         android:fontFamily="@font/manrope_bold"
+                        android:paddingHorizontal="8dp"
+                        android:paddingVertical="4dp"
                         android:text="00:00 AM"
-                        android:textColor="#1A2B2A"
+                        android:textColor="@color/junglegreen"
                         android:textSize="13sp" />
                 </LinearLayout>
 
@@ -267,6 +271,7 @@
                                 android:textSize="14sp" />
 
                             <ImageView
+                                android:id="@+id/iv_alarm_instruction_icon"
                                 android:layout_width="16dp"
                                 android:layout_height="16dp"
                                 android:contentDescription="Instruction icon"

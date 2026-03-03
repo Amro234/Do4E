@@ -22,7 +22,7 @@ import java.util.Calendar;
 
 public class med_alarm extends AppCompatActivity {
 
-    private int medId   = -1;
+    private int medId = -1;
     private int notifId = -1;
     private MedEntity med;
 
@@ -35,14 +35,14 @@ public class med_alarm extends AppCompatActivity {
             setShowWhenLocked(true);
             setTurnScreenOn(true);
             KeyguardManager km = (KeyguardManager) getSystemService(KEYGUARD_SERVICE);
-            if (km != null) km.requestDismissKeyguard(this, null);
+            if (km != null)
+                km.requestDismissKeyguard(this, null);
         } else {
             getWindow().addFlags(
-                    WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED  |
-                            WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON    |
-                            WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON    |
-                            WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
-            );
+                    WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
+                            WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON |
+                            WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON |
+                            WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
         }
 
         setContentView(R.layout.activity_med_alarm);
@@ -57,8 +57,8 @@ public class med_alarm extends AppCompatActivity {
         });
 
         // ── Read extras passed by ReminderReceiver ────────────────────────
-        medId   = getIntent().getIntExtra("med_id",   -1);
-        notifId = getIntent().getIntExtra("notif_id",  0);
+        medId = getIntent().getIntExtra("med_id", -1);
+        notifId = getIntent().getIntExtra("notif_id", 0);
 
         // ── Load medicine from DB then populate UI ────────────────────────
         loadMedicineAndPopulateUI();
@@ -75,45 +75,67 @@ public class med_alarm extends AppCompatActivity {
     // ─────────────────────────────────────────────────────────────────────────
 
     private void loadMedicineAndPopulateUI() {
-        if (medId == -1) return;
+        if (medId == -1)
+            return;
 
         AppDataBase db = AppDataBase.getInstance(this);
         new Thread(() -> {
             med = db.medDAO().getById(medId);
             runOnUiThread(() -> {
-                if (med == null) return;
+                if (med == null)
+                    return;
 
                 // Medicine name
                 ((TextView) findViewById(R.id.tv_alarm_med_name)).setText(med.name);
 
                 // Subtitle label
                 TextView tvArabic = findViewById(R.id.tv_alarm_med_name_arabic);
-                if (tvArabic != null) tvArabic.setText(med.name);
+                if (tvArabic != null)
+                    tvArabic.setText(med.name);
 
                 // Dosage
                 TextView tvDosage = findViewById(R.id.tv_alarm_dosage);
                 if (tvDosage != null)
                     tvDosage.setText(med.dosage != null && !med.dosage.isEmpty()
-                            ? med.dosage : "—");
+                            ? med.dosage
+                            : "—");
 
                 // Time
                 TextView tvTime = findViewById(R.id.tv_alarm_time);
-                if (tvTime != null) tvTime.setText(med.time);
+                if (tvTime != null)
+                    tvTime.setText(med.time);
 
                 // Instruction
                 TextView tvInstruction = findViewById(R.id.tv_alarm_instruction);
                 if (tvInstruction != null && med.instruction != null)
                     tvInstruction.setText(med.instruction);
 
-                // Med type icon
+                // Med type icon (top) - static icon
                 ImageView ivIcon = findViewById(R.id.iv_alarm_med_icon);
                 if (ivIcon != null) {
+                    ivIcon.setImageResource(R.drawable.live_reminder_icon);
+                }
+
+                // Med photo (second image) - swapping based on type
+                ImageView ivPhoto = findViewById(R.id.iv_alarm_med_photo);
+                if (ivPhoto != null) {
                     if ("Syrup".equalsIgnoreCase(med.medType))
-                        ivIcon.setImageResource(R.drawable.serup_24dp_icon);
+                        ivPhoto.setImageResource(R.drawable.syrup1);
                     else if ("Syringe".equalsIgnoreCase(med.medType))
-                        ivIcon.setImageResource(R.drawable.syringe_24dp_icon);
+                        ivPhoto.setImageResource(R.drawable.syringes2);
                     else
-                        ivIcon.setImageResource(R.drawable.pill_24dp_icon);
+                        ivPhoto.setImageResource(R.drawable.pill1);
+                }
+
+                // Instruction icon - swapping based on text
+                ImageView ivInstructionIcon = findViewById(R.id.iv_alarm_instruction_icon);
+                if (ivInstructionIcon != null) {
+                    if ("Before Food".equalsIgnoreCase(med.instruction))
+                        ivInstructionIcon.setImageResource(R.drawable.before_food_24dp_icon);
+                    else if ("During Food".equalsIgnoreCase(med.instruction))
+                        ivInstructionIcon.setImageResource(R.drawable.during_food_24dp_icon);
+                    else if ("After Food".equalsIgnoreCase(med.instruction))
+                        ivInstructionIcon.setImageResource(R.drawable.after_food_24dp_icon);
                 }
             });
         }).start();
@@ -124,7 +146,10 @@ public class med_alarm extends AppCompatActivity {
     // ─────────────────────────────────────────────────────────────────────────
 
     private void handleLogTaken() {
-        if (medId == -1) { finishAndDismiss(); return; }
+        if (medId == -1) {
+            finishAndDismiss();
+            return;
+        }
         AppDataBase db = AppDataBase.getInstance(this);
         new Thread(() -> {
             db.medDAO().incrementDaysTaken(medId);
@@ -133,17 +158,20 @@ public class med_alarm extends AppCompatActivity {
     }
 
     private void handleSnooze() {
-        if (med == null) { finishAndDismiss(); return; }
+        if (med == null) {
+            finishAndDismiss();
+            return;
+        }
 
         Calendar snooze = Calendar.getInstance();
         snooze.add(Calendar.MINUTE, 10);
 
         MedEntity snoozeMed = new MedEntity();
-        snoozeMed.id_meds   = med.id_meds;
-        snoozeMed.name      = med.name;
-        snoozeMed.time      = med.time;
-        snoozeMed.hour      = snooze.get(Calendar.HOUR_OF_DAY);
-        snoozeMed.minute    = snooze.get(Calendar.MINUTE);
+        snoozeMed.id_meds = med.id_meds;
+        snoozeMed.name = med.name;
+        snoozeMed.time = med.time;
+        snoozeMed.hour = snooze.get(Calendar.HOUR_OF_DAY);
+        snoozeMed.minute = snooze.get(Calendar.MINUTE);
         snoozeMed.startDate = snooze.getTimeInMillis();
 
         ReminderScheduler.schedule(this, snoozeMed);
@@ -166,9 +194,9 @@ public class med_alarm extends AppCompatActivity {
     // ─────────────────────────────────────────────────────────────────────────
 
     private void finishAndDismiss() {
-        NotificationManager nm =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        if (nm != null) nm.cancel(notifId);
+        NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        if (nm != null)
+            nm.cancel(notifId);
         finish();
     }
 }

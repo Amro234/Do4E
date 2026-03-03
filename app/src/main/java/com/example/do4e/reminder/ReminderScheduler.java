@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.util.Log;
 
 import java.util.Calendar;
 import java.util.Locale;
@@ -148,20 +149,35 @@ public class ReminderScheduler {
     }
 
     private static void setAlarm(AlarmManager alarmManager, long timeInMillis, PendingIntent pendingIntent) {
+        Log.d("ReminderScheduler", "Scheduling alarm for: " + new java.util.Date(timeInMillis)
+                + " (in " + ((timeInMillis - System.currentTimeMillis()) / 1000) + "s)");
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                if (alarmManager.canScheduleExactAlarms()) {
-                    alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent);
-                } else {
-                    alarmManager.set(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent);
-                }
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent);
-            } else {
-                alarmManager.setExact(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent);
+            // setAlarmClock() is the MOST reliable API — it bypasses Doze mode,
+            // App Standby, and all OEM battery optimizations. It also shows an
+            // alarm icon in the status bar, which is appropriate for medicine reminders.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                AlarmManager.AlarmClockInfo info = new AlarmManager.AlarmClockInfo(timeInMillis, pendingIntent);
+                alarmManager.setAlarmClock(info, pendingIntent);
+                Log.d("ReminderScheduler", "Used setAlarmClock (most reliable)");
+                return;
             }
         } catch (SecurityException e) {
-            e.printStackTrace();
+            Log.w("ReminderScheduler", "setAlarmClock failed, trying fallback", e);
+        }
+
+        // Fallback for edge cases
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent);
+                Log.d("ReminderScheduler", "Used setExactAndAllowWhileIdle (fallback)");
+            } else {
+                alarmManager.setExact(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent);
+                Log.d("ReminderScheduler", "Used setExact (fallback)");
+            }
+        } catch (SecurityException e) {
+            // Last resort — inexact but still fires while idle
+            alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent);
+            Log.w("ReminderScheduler", "Used setAndAllowWhileIdle (last resort)", e);
         }
     }
 

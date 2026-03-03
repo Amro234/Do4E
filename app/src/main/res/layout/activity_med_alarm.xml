@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F0F4F3"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="32dp">
+
+        <!-- ── Top bar ──────────────────────────────────────────────────── -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
+
+            <!-- Close button -->
+            <ImageView
+                android:id="@+id/btn_skip"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:contentDescription="Close"
+                android:padding="8dp"
+                android:src="@drawable/baseline_arrow_back_24" />
+
+            <!-- LIVE REMINDER label (centered) -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <View
+                    android:layout_width="8dp"
+                    android:layout_height="8dp"
+                    android:layout_marginEnd="6dp"
+                    android:background="@drawable/badge_circle" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/manrope_semibold"
+                    android:letterSpacing="0.12"
+                    android:text="LIVE REMINDER"
+                    android:textColor="#1A2B2A"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+        <!-- ── Bell + medicine icon ─────────────────────────────────────── -->
+        <FrameLayout
+            android:layout_width="66dp"
+            android:layout_height="66dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp">
+
+            <!-- Medicine icon (type-driven by Java) -->
+            <ImageView
+                android:id="@+id/iv_alarm_med_icon"
+                android:layout_width="66dp"
+                android:layout_height="66dp"
+                android:layout_gravity="center"
+                android:contentDescription="Medicine type"
+                android:src="@drawable/live_reminder_icon" />
+
+            <!-- Bell badge (top-right) -->
+        </FrameLayout>
+
+        <!-- ── Heading ───────────────────────────────────────────────────── -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="20dp"
+            android:fontFamily="@font/manrope_extrabold"
+            android:gravity="center"
+            android:paddingStart="32dp"
+            android:paddingEnd="32dp"
+            android:text="Time for your medication!"
+            android:textColor="#1A2B2A"
+            android:textSize="26sp" />
+
+        <!-- ── Medicine photo card ───────────────────────────────────────── -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"
+            app:cardCornerRadius="16dp"
+            android:layout_gravity="center_horizontal"
+            app:cardElevation="0dp">
+
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="Medicine photo"
+                android:scaleType="centerCrop"
+                android:src="@drawable/pill1" />
+        </androidx.cardview.widget.CardView>
+
+        <!-- ── Upcoming dose card ────────────────────────────────────────── -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="20dp"
+            app:cardBackgroundColor="#FFFFFF"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <!-- "UPCOMING DOSE" label + time row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/manrope_semibold"
+                        android:letterSpacing="0.10"
+                        android:text="UPCOMING DOSE"
+                        android:textColor="#4CAF8A"
+                        android:textSize="11sp" />
+
+                    <TextView
+                        android:id="@+id/tv_alarm_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/manrope_bold"
+                        android:text="00:00 AM"
+                        android:textColor="#1A2B2A"
+                        android:textSize="13sp" />
+                </LinearLayout>
+
+                <!-- Medicine name -->
+                <TextView
+                    android:id="@+id/tv_alarm_med_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:fontFamily="@font/manrope_extrabold"
+                    android:text="Medicine Name"
+                    android:textColor="#1A2B2A"
+                    android:textSize="20sp" />
+
+                <!-- Subtitle / Arabic name placeholder (hidden by default) -->
+                <TextView
+                    android:id="@+id/tv_alarm_med_name_arabic"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/manrope_regular"
+                    android:textColor="#6B7B7A"
+                    android:textSize="13sp"
+                    android:visibility="gone" />
+
+                <!-- Divider -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="12dp"
+                    android:background="#F0F4F3" />
+
+                <!-- Dosage + Instruction row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <!-- Dosage -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/manrope_semibold"
+                            android:letterSpacing="0.08"
+                            android:text="DOSAGE"
+                            android:textColor="#9EAAA9"
+                            android:textSize="10sp" />
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:layout_marginEnd="4dp"
+                                android:contentDescription="Dosage icon"
+                                android:src="@drawable/pill_24dp_icon" />
+
+                            <TextView
+                                android:id="@+id/tv_alarm_dosage"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/manrope_bold"
+                                android:text="1 Tablet"
+                                android:textColor="#1A2B2A"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- Instruction -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="end"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/manrope_semibold"
+                            android:gravity="end"
+                            android:letterSpacing="0.08"
+                            android:text="INSTRUCTION"
+                            android:textColor="#9EAAA9"
+                            android:textSize="10sp" />
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/tv_alarm_instruction"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/manrope_bold"
+                                android:layout_marginEnd="4dp"
+                                android:text="Before Food"
+                                android:textColor="#1A2B2A"
+                                android:textSize="14sp" />
+
+                            <ImageView
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:contentDescription="Instruction icon"
+                                android:src="@drawable/before_food_24dp_icon" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- ── Log as Taken CTA ──────────────────────────────────────────── -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_log_taken"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="20dp"
+            android:fontFamily="@font/manrope_bold"
+            android:text="Log as Taken"
+            android:textSize="16sp"
+            app:cornerRadius="28dp"
+            app:icon="@drawable/check_circle_24dp_icon"
+            app:iconGravity="textStart"
+            app:iconTint="@android:color/white"
+            style="@style/Widget.MaterialComponents.Button" />
+
+        <!-- ── Snooze | Details row ──────────────────────────────────────── -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="20dp"
+            android:orientation="horizontal">
+
+            <!-- Snooze button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_snooze"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                android:fontFamily="@font/manrope_semibold"
+                android:text="Snooze"
+                android:textSize="14sp"
+                app:cornerRadius="24dp"
+                app:icon="@drawable/snooze_24dp_icon"
+                app:iconGravity="textStart"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+
+            <!-- Details button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_details"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:fontFamily="@font/manrope_semibold"
+                android:text="Details"
+                android:textSize="14sp"
+                app:cornerRadius="24dp"
+                app:icon="@drawable/info_24dp_icon"
+                app:iconGravity="textStart"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+        </LinearLayout>
+
+        <!-- ── Skip this dose link ───────────────────────────────────────── -->
+        <TextView
+            android:id="@+id/tv_skip_dose"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="20dp"
+            android:fontFamily="@font/manrope_medium"
+            android:text="Skip this dose"
+            android:textColor="#9EAAA9"
+            android:textSize="13sp" />
+
+        <!-- ── DOAEY footer ───────────────────────────────────────────────── -->
+        <LinearLayout
+            android:layout_width="75dp"
+            android:layout_height="35dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="24dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="75dp"
+                android:layout_height="35dp"
+                android:layout_marginEnd="6dp"
+                android:background="@drawable/header_icon1" />
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

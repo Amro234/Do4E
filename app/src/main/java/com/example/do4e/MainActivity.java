@@ -39,6 +39,15 @@ public class MainActivity extends AppCompatActivity {
             navController = navHostFragment.getNavController();
             BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
             NavigationUI.setupWithNavController(bottomNav, navController);
+
+            // Hide bottom navigation ONLY for the Add Medicine screen
+            navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
+                if (destination.getId() == R.id.add_meds) {
+                    bottomNav.setVisibility(android.view.View.GONE);
+                } else {
+                    bottomNav.setVisibility(android.view.View.VISIBLE);
+                }
+            });
         }
     }
 

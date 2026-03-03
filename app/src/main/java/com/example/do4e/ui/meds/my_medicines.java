@@ -9,6 +9,7 @@ import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,6 +19,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.do4e.R;
 import com.example.do4e.db.AppDataBase;
@@ -26,23 +28,30 @@ import com.example.do4e.reminder.ReminderScheduler;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class my_medicines extends Fragment {
 
-    private MedAdapter adapter;
-
-    // Views toggled between empty state and list state
-    private View medicineNoLayout;
-    private View medicinesListLayout;
-    private View fabAdd;
-    private View btnAddMedicine;
-    private TextView tvNoMedicineTitle;
-
-    private TextView tabToday, tabDaily, tabWeekly, tabMonthly;
-    private String currentTab = "Today"; // "Today", "Daily", "Weekly", "Monthly"
+    // ── Per-tab adapters ──────────────────────────────────────────────────────
+    private MedAdapter adapterToday, adapterDaily, adapterWeekly, adapterMonthly;
     private List<MedEntity> allMeds = new ArrayList<>();
+
+    // ── Views ─────────────────────────────────────────────────────────────────
+    private ViewPager2 viewPager;
+    private TextView tabToday, tabDaily, tabWeekly, tabMonthly;
+    private View fabAdd;
+
+    // ── State ─────────────────────────────────────────────────────────────────
+    private String currentTab = "Today";
+
+    // ═════════════════════════════════════════════════════════════════════════
+    // Fragment lifecycle
+    // ═════════════════════════════════════════════════════════════════════════
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -54,113 +63,48 @@ public class my_medicines extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Check if we should start on a specific tab (e.g. Daily, Weekly, Monthly)
         if (getArguments() != null) {
             String startTab = getArguments().getString("start_interval");
-            if (startTab != null) {
-                // interval values (Daily/Weekly/Monthly) map to their own tabs
+            if (startTab != null)
                 currentTab = startTab;
-            }
         }
 
-        // Cache views
-        medicineNoLayout = view.findViewById(R.id.medicine_no_layout);
-        medicinesListLayout = view.findViewById(R.id.medicines_list_layout);
-        fabAdd = view.findViewById(R.id.fab_add);
-        btnAddMedicine = view.findViewById(R.id.btn_add_medicine);
-        tvNoMedicineTitle = view.findViewById(R.id.tv_no_medicine_title);
-
-        // Back button
         view.findViewById(R.id.btn_back)
                 .setOnClickListener(v -> NavHostFragment.findNavController(this).popBackStack());
 
-        // FAB (list state) → navigate to add_meds
+        fabAdd = view.findViewById(R.id.fab_add);
+        fabAdd.setVisibility(View.VISIBLE);
         fabAdd.setOnClickListener(
-                v -> NavHostFragment.findNavController(this).navigate(R.id.action_my_medicines_to_add_meds));
+                v -> NavHostFragment.findNavController(this)
+                        .navigate(R.id.action_my_medicines_to_add_meds));
 
-        // Empty-state "Add Medicine" button → navigate to add_meds
-        btnAddMedicine.setOnClickListener(
-                v -> NavHostFragment.findNavController(this).navigate(R.id.action_my_medicines_to_add_meds));
-
-        // RecyclerView setup
-        RecyclerView recyclerView = view.findViewById(R.id.rv_medicines);
-        if (recyclerView != null) {
-            recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-            adapter = new MedAdapter(new ArrayList<>(), this::onDeleteClicked, this::onLogNowClicked,
-                    this::onEditClicked);
-            recyclerView.setAdapter(adapter);
-        }
-
-        // Tabs setup
         tabToday = view.findViewById(R.id.tab_today);
         tabDaily = view.findViewById(R.id.tab_daily);
         tabWeekly = view.findViewById(R.id.tab_weekly);
         tabMonthly = view.findViewById(R.id.tab_monthly);
 
-        tabToday.setOnClickListener(v -> selectTab("Today"));
-        tabDaily.setOnClickListener(v -> selectTab("Daily"));
-        tabWeekly.setOnClickListener(v -> selectTab("Weekly"));
-        tabMonthly.setOnClickListener(v -> selectTab("Monthly"));
+        tabToday.setOnClickListener(v -> viewPager.setCurrentItem(0, true));
+        tabDaily.setOnClickListener(v -> viewPager.setCurrentItem(1, true));
+        tabWeekly.setOnClickListener(v -> viewPager.setCurrentItem(2, true));
+        tabMonthly.setOnClickListener(v -> viewPager.setCurrentItem(3, true));
 
-        loadMedicines();
-    }
+        viewPager = view.findViewById(R.id.view_pager);
+        viewPager.setAdapter(new TabPagerAdapter());
+        viewPager.setOffscreenPageLimit(3);
 
-    private void selectTab(String tab) {
-        currentTab = tab;
+        viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                String[] tabs = { "Today", "Daily", "Weekly", "Monthly" };
+                currentTab = tabs[position];
+                updateTabStyles();
+                updateFabVisibility();
+            }
+        });
+
+        viewPager.setCurrentItem(tabIndexFor(currentTab), false);
         updateTabStyles();
-        filterAndDisplay();
-    }
-
-    private void updateTabStyles() {
-        boolean isToday = currentTab.equals("Today");
-        tabToday.setBackgroundResource(isToday ? R.drawable.bg_tab_selected : 0);
-        tabToday.setTextColor(ContextCompat.getColor(requireContext(),
-                isToday ? R.color.junglegreen : R.color.StateGray));
-
-        boolean isDaily = currentTab.equals("Daily");
-        tabDaily.setBackgroundResource(isDaily ? R.drawable.bg_tab_selected : 0);
-        tabDaily.setTextColor(ContextCompat.getColor(requireContext(),
-                isDaily ? R.color.junglegreen : R.color.StateGray));
-
-        boolean isWeekly = currentTab.equals("Weekly");
-        tabWeekly.setBackgroundResource(isWeekly ? R.drawable.bg_tab_selected : 0);
-        tabWeekly.setTextColor(ContextCompat.getColor(requireContext(),
-                isWeekly ? R.color.junglegreen : R.color.StateGray));
-
-        boolean isMonthly = currentTab.equals("Monthly");
-        tabMonthly.setBackgroundResource(isMonthly ? R.drawable.bg_tab_selected : 0);
-        tabMonthly.setTextColor(ContextCompat.getColor(requireContext(),
-                isMonthly ? R.color.junglegreen : R.color.StateGray));
-    }
-
-    private void filterAndDisplay() {
-        List<MedEntity> filtered = new ArrayList<>();
-        long today = System.currentTimeMillis();
-        for (MedEntity m : allMeds) {
-            if (m.interval == null || m.interval.isEmpty()) {
-                m.interval = "Daily";
-            }
-            if (currentTab.equals("Today")) {
-                // Show if it has started and hasn't expired
-                if (today >= m.startDate && (m.isContinuous || m.daysTaken < m.durationDays)) {
-                    filtered.add(m);
-                }
-            } else {
-                if (m.interval.equals(currentTab)) {
-                    filtered.add(m);
-                }
-            }
-        }
-        if (adapter != null) {
-            adapter.updateList(filtered);
-        }
-        updateEmptyState(filtered.isEmpty());
-    }
-
-    private void onEditClicked(MedEntity med) {
-        Bundle args = new Bundle();
-        args.putInt("med_id", med.id_meds);
-        NavHostFragment.findNavController(this).navigate(R.id.action_my_medicines_to_add_meds, args);
+        loadMedicines();
     }
 
     @Override
@@ -169,64 +113,222 @@ public class my_medicines extends Fragment {
         loadMedicines();
     }
 
-    // ─── Load from DB ─────────────────────────────────────────────────────────
+    // ═════════════════════════════════════════════════════════════════════════
+    // ViewPager2 adapter
+    // ═════════════════════════════════════════════════════════════════════════
+
+    private class TabPagerAdapter extends RecyclerView.Adapter<TabPagerAdapter.PageHolder> {
+
+        final String[] tabNames = { "Today", "Daily", "Weekly", "Monthly" };
+
+        @NonNull
+        @Override
+        public PageHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            RecyclerView rv = new RecyclerView(parent.getContext());
+            rv.setLayoutParams(new ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT));
+            rv.setLayoutManager(new LinearLayoutManager(parent.getContext()));
+            rv.setPadding(0, 0, 0, 80);
+            rv.setClipToPadding(false);
+            return new PageHolder(rv);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull PageHolder holder, int position) {
+            MedAdapter adapter = new MedAdapter(
+                    new ArrayList<>(),
+                    tabNames[position],
+                    my_medicines.this::onDeleteClicked,
+                    my_medicines.this::onLogNowClicked,
+                    my_medicines.this::onEditClicked,
+                    () -> fabAdd.performClick());
+            holder.recyclerView.setAdapter(adapter);
+
+            switch (position) {
+                case 0:
+                    adapterToday = adapter;
+                    break;
+                case 1:
+                    adapterDaily = adapter;
+                    break;
+                case 2:
+                    adapterWeekly = adapter;
+                    break;
+                case 3:
+                    adapterMonthly = adapter;
+                    break;
+            }
+
+            filterAndDisplay(tabNames[position], adapter);
+        }
+
+        @Override
+        public int getItemCount() {
+            return 4;
+        }
+
+        class PageHolder extends RecyclerView.ViewHolder {
+            RecyclerView recyclerView;
+
+            PageHolder(RecyclerView rv) {
+                super(rv);
+                recyclerView = rv;
+            }
+        }
+    }
+
+    // ═════════════════════════════════════════════════════════════════════════
+    // Data & filtering
+    // ═════════════════════════════════════════════════════════════════════════
 
     private void loadMedicines() {
         AppDataBase db = AppDataBase.getInstance(requireContext());
-        long today = System.currentTimeMillis();
         new Thread(() -> {
-            // Fetch all meds so that future meds show in Daily/Weekly/Monthly
             List<MedEntity> meds = db.medDAO().getAllMeds();
-            // 2. CHECK LIFECYCLE BEFORE TOUCHING UI
             if (isAdded() && getActivity() != null) {
                 requireActivity().runOnUiThread(() -> {
-                    // 3. Safe to update UI
                     allMeds = meds;
-                    filterAndDisplay();
+                    refreshAllTabs();
                 });
             }
         }).start();
     }
 
-    private void updateEmptyState(boolean isEmpty) {
-        if (isEmpty) {
-            medicineNoLayout.setVisibility(View.VISIBLE);
-            medicinesListLayout.setVisibility(View.GONE);
-            fabAdd.setVisibility(View.GONE);
+    private void filterAndDisplay(String tab, MedAdapter adapter) {
+        List<MedEntity> filtered = new ArrayList<>();
 
-            if (tvNoMedicineTitle != null) {
-                if (currentTab.equals("Daily")) {
-                    tvNoMedicineTitle.setText(R.string.Medicine_No_Daily);
-                } else if (currentTab.equals("Weekly")) {
-                    tvNoMedicineTitle.setText(R.string.Medicine_NO_Weekly);
-                } else if (currentTab.equals("Monthly")) {
-                    tvNoMedicineTitle.setText(R.string.Medicine_No_Monthly);
-                } else {
-                    tvNoMedicineTitle.setText(R.string.Medicine_No);
-                }
+        // Normalize "today" to midnight local time
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        long todayLocal = cal.getTimeInMillis();
+
+        for (MedEntity m : allMeds) {
+            if (m.interval == null || m.interval.isEmpty())
+                m.interval = "Daily";
+
+            // Normalize startDate (UTC midnight from MaterialDatePicker)
+            // to local midnight so both sides of the comparison match
+            Calendar startCal = Calendar.getInstance();
+            startCal.setTimeInMillis(m.startDate);
+            startCal.set(Calendar.HOUR_OF_DAY, 0);
+            startCal.set(Calendar.MINUTE, 0);
+            startCal.set(Calendar.SECOND, 0);
+            startCal.set(Calendar.MILLISECOND, 0);
+            long startLocal = startCal.getTimeInMillis();
+
+            if (tab.equals("Today")) {
+                if (todayLocal >= startLocal && (m.isContinuous || m.daysTaken < m.durationDays))
+                    filtered.add(m);
+            } else {
+                if (m.interval.equals(tab))
+                    filtered.add(m);
             }
-        } else {
-            medicineNoLayout.setVisibility(View.GONE);
-            medicinesListLayout.setVisibility(View.VISIBLE);
-            fabAdd.setVisibility(View.VISIBLE);
+        }
+        adapter.updateList(filtered);
+    }
+
+    private void refreshAllTabs() {
+        if (adapterToday != null)
+            filterAndDisplay("Today", adapterToday);
+        if (adapterDaily != null)
+            filterAndDisplay("Daily", adapterDaily);
+        if (adapterWeekly != null)
+            filterAndDisplay("Weekly", adapterWeekly);
+        if (adapterMonthly != null)
+            filterAndDisplay("Monthly", adapterMonthly);
+        updateFabVisibility();
+    }
+
+    /** Show FAB only when the current tab has medicines; hide it on empty state. */
+    private void updateFabVisibility() {
+        MedAdapter current = null;
+        switch (currentTab) {
+            case "Today":
+                current = adapterToday;
+                break;
+            case "Daily":
+                current = adapterDaily;
+                break;
+            case "Weekly":
+                current = adapterWeekly;
+                break;
+            case "Monthly":
+                current = adapterMonthly;
+                break;
+        }
+        boolean hasMeds = current != null && current.getItemViewType(0) != 1;
+        fabAdd.setVisibility(hasMeds ? View.VISIBLE : View.GONE);
+    }
+
+    // ═════════════════════════════════════════════════════════════════════════
+    // Tab styling helpers
+    // ═════════════════════════════════════════════════════════════════════════
+
+    private int tabIndexFor(String tab) {
+        switch (tab) {
+            case "Daily":
+                return 1;
+            case "Weekly":
+                return 2;
+            case "Monthly":
+                return 3;
+            default:
+                return 0;
         }
     }
 
-    // ─── Delete flow ──────────────────────────────────────────────────────────
+    private void updateTabStyles() {
+        if (getContext() == null)
+            return;
+        TextView[] tabs = { tabToday, tabDaily, tabWeekly, tabMonthly };
+        String[] names = { "Today", "Daily", "Weekly", "Monthly" };
+        for (int i = 0; i < tabs.length; i++) {
+            boolean selected = names[i].equals(currentTab);
+            tabs[i].setBackgroundResource(selected ? R.drawable.bg_tab_selected : 0);
+            tabs[i].setTextColor(ContextCompat.getColor(requireContext(),
+                    selected ? R.color.junglegreen : R.color.StateGray));
+        }
+    }
+
+    // ═════════════════════════════════════════════════════════════════════════
+    // Action callbacks
+    // ═════════════════════════════════════════════════════════════════════════
+
+    private void onEditClicked(MedEntity med) {
+        Bundle args = new Bundle();
+        args.putInt("med_id", med.id_meds);
+        NavHostFragment.findNavController(this)
+                .navigate(R.id.action_my_medicines_to_add_meds, args);
+    }
 
     private void onDeleteClicked(MedEntity med) {
-        // Pass the primitive ID instead of the whole object
         DeleteSheet sheet = DeleteSheet.newInstance(med.id_meds);
-        sheet.setOnDeleteConfirmed(() -> loadMedicines());
+        sheet.setOnDeleteConfirmed(this::loadMedicines);
         sheet.show(getParentFragmentManager(), "delete_sheet");
     }
+
+    private void onLogNowClicked(MedEntity med) {
+        AppDataBase db = AppDataBase.getInstance(requireContext());
+        new Thread(() -> {
+            db.medDAO().incrementDaysTaken(med.id_meds);
+            if (isAdded() && getActivity() != null)
+                requireActivity().runOnUiThread(this::loadMedicines);
+        }).start();
+    }
+
+    // ═════════════════════════════════════════════════════════════════════════
+    // Delete bottom sheet
+    // ═════════════════════════════════════════════════════════════════════════
 
     public static class DeleteSheet extends BottomSheetDialogFragment {
 
         private Runnable onConfirmed;
-        private MedEntity med; // Fetched safely from DB
+        private MedEntity med;
 
-        // <-- UPDATED TO PASS ID VIA BUNDLE -->
         public static DeleteSheet newInstance(int medId) {
             DeleteSheet sheet = new DeleteSheet();
             Bundle args = new Bundle();
@@ -257,13 +359,10 @@ public class my_medicines extends Fragment {
             int medId = getArguments().getInt("MED_ID");
             AppDataBase db = AppDataBase.getInstance(requireContext());
 
-            // <-- FETCH DATA FROM DB TO PREVENT PROCESS DEATH CRASH -->
             new Thread(() -> {
                 try {
-                    // Try direct fetch if you have getById in your DAO
                     med = db.medDAO().getById(medId);
                 } catch (Exception e) {
-                    // Fallback in case getById isn't set up: find it manually
                     for (MedEntity m : db.medDAO().getAllMeds()) {
                         if (m.id_meds == medId) {
                             med = m;
@@ -271,11 +370,8 @@ public class my_medicines extends Fragment {
                         }
                     }
                 }
-
-                // 2. CHECK LIFECYCLE BEFORE TOUCHING UI
                 if (isAdded() && getActivity() != null) {
                     requireActivity().runOnUiThread(() -> {
-                        // 3. Safe to update UI
                         if (med == null) {
                             dismiss();
                             return;
@@ -288,17 +384,18 @@ public class my_medicines extends Fragment {
 
         private void setupSheetUI(View view) {
             TextView subtitle = view.findViewById(R.id.tv_delete_subtitle);
-            String detail = (med.dosage == null || med.dosage.isEmpty()) ? med.frequency
+            String detail = (med.dosage == null || med.dosage.isEmpty())
+                    ? med.frequency
                     : med.dosage + " · " + med.frequency;
             String full = "Are you sure you want to remove " + med.name
                     + " (" + detail + ") from your schedule? This action cannot be undone.";
             SpannableString span = new SpannableString(full);
-
             int ns = full.indexOf(med.name);
             if (ns != -1) {
                 int ne = ns + med.name.length();
                 span.setSpan(new StyleSpan(Typeface.BOLD), ns, ne, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                span.setSpan(new ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.Ebony)),
+                span.setSpan(new ForegroundColorSpan(
+                        ContextCompat.getColor(requireContext(), R.color.Ebony)),
                         ns, ne, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
             subtitle.setText(span);
@@ -311,11 +408,8 @@ public class my_medicines extends Fragment {
                 new Thread(() -> {
                     ReminderScheduler.cancelAlarm(requireContext(), med.name, med.time);
                     db.medDAO().delete(med);
-
-                    // 2. CHECK LIFECYCLE BEFORE TOUCHING UI
                     if (isAdded() && getActivity() != null) {
                         requireActivity().runOnUiThread(() -> {
-                            // 3. Safe to update UI
                             dismiss();
                             if (onConfirmed != null)
                                 onConfirmed.run();
@@ -328,27 +422,13 @@ public class my_medicines extends Fragment {
         }
     }
 
-    // ─── Log Now flow ─────────────────────────────────────────────────────────
-
-    private void onLogNowClicked(MedEntity med) {
-        AppDataBase db = AppDataBase.getInstance(requireContext());
-        new Thread(() -> {
-            db.medDAO().incrementDaysTaken(med.id_meds);
-            // 2. CHECK LIFECYCLE BEFORE TOUCHING UI
-            if (isAdded() && getActivity() != null) {
-                requireActivity().runOnUiThread(() -> {
-                    // 3. Safe to update UI
-                    loadMedicines();
-                });
-            }
-        }).start();
-    }
-
     // ═════════════════════════════════════════════════════════════════════════
-    // RecyclerView Adapter
+    // RecyclerView Adapter + ViewHolder
     // ═════════════════════════════════════════════════════════════════════════
 
-    public static class MedAdapter extends RecyclerView.Adapter<MedAdapter.MedViewHolder> {
+    public static class MedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+        private static final int TYPE_ITEM = 0;
+        private static final int TYPE_EMPTY = 1;
 
         public interface OnDeleteListener {
             void onDelete(MedEntity med);
@@ -362,19 +442,26 @@ public class my_medicines extends Fragment {
             void onEdit(MedEntity med);
         }
 
+        public interface OnAddListener {
+            void onAdd();
+        }
+
         private List<MedEntity> medList;
+        private final String tabName;
         private final OnDeleteListener deleteListener;
         private final OnLogNowListener logNowListener;
         private final OnEditListener editListener;
+        private final OnAddListener addListener;
 
-        public MedAdapter(List<MedEntity> medList,
-                OnDeleteListener deleteListener,
-                OnLogNowListener logNowListener,
-                OnEditListener editListener) {
+        public MedAdapter(List<MedEntity> medList, String tabName,
+                OnDeleteListener deleteListener, OnLogNowListener logNowListener,
+                OnEditListener editListener, OnAddListener addListener) {
             this.medList = medList;
+            this.tabName = tabName;
             this.deleteListener = deleteListener;
             this.logNowListener = logNowListener;
             this.editListener = editListener;
+            this.addListener = addListener;
         }
 
         public void updateList(List<MedEntity> newList) {
@@ -382,26 +469,83 @@ public class my_medicines extends Fragment {
             notifyDataSetChanged();
         }
 
+        @Override
+        public int getItemViewType(int position) {
+            return (medList == null || medList.isEmpty()) ? TYPE_EMPTY : TYPE_ITEM;
+        }
+
         @NonNull
         @Override
-        public MedViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            if (viewType == TYPE_EMPTY) {
+                View v = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.medicine_no, parent, false);
+                v.setLayoutParams(new ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT));
+                return new EmptyViewHolder(v);
+            }
             View v = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.item_medicine_card, parent, false);
             return new MedViewHolder(v);
         }
 
         @Override
-        public void onBindViewHolder(@NonNull MedViewHolder holder, int position) {
-            holder.bind(medList.get(position), deleteListener, logNowListener, editListener);
+        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+            if (holder instanceof EmptyViewHolder)
+                ((EmptyViewHolder) holder).bind(tabName, addListener);
+            else if (holder instanceof MedViewHolder)
+                ((MedViewHolder) holder).bind(
+                        medList.get(position), deleteListener, logNowListener, editListener);
         }
 
         @Override
         public int getItemCount() {
-            return medList == null ? 0 : medList.size();
+            return (medList == null || medList.isEmpty()) ? 1 : medList.size();
         }
 
+        // ── Empty state ViewHolder ────────────────────────────────────────────
+
+        static class EmptyViewHolder extends RecyclerView.ViewHolder {
+            TextView title, sub;
+            View btnAdd;
+
+            EmptyViewHolder(@NonNull View itemView) {
+                super(itemView);
+                title = itemView.findViewById(R.id.tv_no_medicine_title);
+                sub = itemView.findViewById(R.id.tv_no_medicine_sub);
+                btnAdd = itemView.findViewById(R.id.btn_add_medicine);
+            }
+
+            void bind(String tab, OnAddListener listener) {
+                btnAdd.setOnClickListener(v -> listener.onAdd());
+                switch (tab) {
+                    case "Daily":
+                        title.setText(itemView.getContext().getString(R.string.Medicine_No_Daily));
+                        sub.setText("Add your first daily medicine to get started.");
+                        break;
+                    case "Weekly":
+                        title.setText(itemView.getContext().getString(R.string.Medicine_NO_Weekly));
+                        sub.setText("Add your first weekly medicine to get started.");
+                        break;
+                    case "Monthly":
+                        title.setText(itemView.getContext().getString(R.string.Medicine_No_Monthly));
+                        sub.setText("Add your first monthly medicine to get started.");
+                        break;
+                    default:
+                        title.setText(itemView.getContext().getString(R.string.Medicine_No));
+                        sub.setText("Add your first medicine to get started.");
+                        break;
+                }
+            }
+        }
+
+        // ── Medicine card ViewHolder ──────────────────────────────────────────
+
         static class MedViewHolder extends RecyclerView.ViewHolder {
-            TextView tvName, tvTime, tvStatus, tvProgress, tvDayCount, tvNextDose;
+
+            TextView tvName, tvTime, tvStatus, tvProgress, tvDayCount, tvNextDose, tvStartDate;
+            ImageView ivMedType;
             LinearProgressIndicator progressBar;
             View btnEdit, btnDelete, btnLogNow;
 
@@ -413,6 +557,8 @@ public class my_medicines extends Fragment {
                 tvProgress = itemView.findViewById(R.id.tv_progress_label);
                 tvDayCount = itemView.findViewById(R.id.tv_day_count);
                 tvNextDose = itemView.findViewById(R.id.tv_next_dose);
+                tvStartDate = itemView.findViewById(R.id.tv_start_date);
+                ivMedType = itemView.findViewById(R.id.iv_med_type);
                 progressBar = itemView.findViewById(R.id.progress_bar);
                 btnEdit = itemView.findViewById(R.id.btn_edit);
                 btnDelete = itemView.findViewById(R.id.btn_delete);
@@ -420,9 +566,32 @@ public class my_medicines extends Fragment {
             }
 
             void bind(MedEntity med, OnDeleteListener dl, OnLogNowListener ll, OnEditListener el) {
+
                 tvName.setText(med.name);
                 tvTime.setText(med.time);
 
+                // ── Med type icon ─────────────────────────────────────────────
+                if (ivMedType != null) {
+                    if ("Syrup".equals(med.medType))
+                        ivMedType.setImageResource(R.drawable.serup_24dp_icon);
+                    else if ("Syringe".equals(med.medType))
+                        ivMedType.setImageResource(R.drawable.syringe_24dp_icon);
+                    else
+                        ivMedType.setImageResource(R.drawable.pill_24dp_icon);
+                }
+
+                // ── Start date with day name ───────────────────────────────────
+                if (tvStartDate != null) {
+                    if (med.startDate != 0) {
+                        String dateStr = new SimpleDateFormat("EEEE, MMM dd", Locale.getDefault())
+                                .format(new Date(med.startDate));
+                        tvStartDate.setText(dateStr);
+                    } else {
+                        tvStartDate.setText("Today");
+                    }
+                }
+
+                // ── Status badge ──────────────────────────────────────────────
                 if (med.isContinuous)
                     tvStatus.setText("Ongoing");
                 else if (med.daysTaken >= med.durationDays)
@@ -430,6 +599,7 @@ public class my_medicines extends Fragment {
                 else
                     tvStatus.setText("Upcoming");
 
+                // ── Progress bar ──────────────────────────────────────────────
                 if (med.isContinuous) {
                     progressBar.setProgress(100);
                     tvDayCount.setText("Continuous");
@@ -441,14 +611,15 @@ public class my_medicines extends Fragment {
                     tvDayCount.setText("Day " + med.daysTaken + " of " + med.durationDays);
                 }
 
+                // ── Next dose label ───────────────────────────────────────────
                 if (tvNextDose != null) {
                     String freqStr = "";
-                    if (med.interval != null && !med.interval.equals("Daily")) {
+                    if (med.interval != null && !med.interval.equals("Daily"))
                         freqStr = " (" + med.frequency + " x " + med.interval.replace("ly", "") + ")";
-                    }
                     tvNextDose.setText("Next dose: " + med.time + freqStr);
                 }
 
+                // ── Buttons ───────────────────────────────────────────────────
                 if (btnLogNow != null) {
                     boolean canLog = med.isContinuous || med.daysTaken < med.durationDays;
                     btnLogNow.setVisibility(canLog ? View.VISIBLE : View.GONE);

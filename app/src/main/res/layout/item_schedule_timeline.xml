@@ -1,38 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
     android:paddingVertical="12dp">
 
+    <!-- ── Time column + timeline line ────────────────────────── -->
     <LinearLayout
         android:layout_width="80dp"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="vertical">
+
         <TextView
             android:id="@+id/tv_time_dot"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/manrope_bold"
             android:text="08:30"
-            android:textColor="@color/Ebony"
+            android:textColor="@color/junglegreen"
             android:textSize="14sp" />
+
+        <!-- Timeline connector line (jungle green) -->
         <View
             android:layout_width="2dp"
-            android:layout_height="40dp"
+            android:layout_height="50dp"
             android:layout_marginTop="8dp"
-            android:background="@color/StateGray"
-            android:alpha="0.3" />
+            android:background="@color/junglegreen"
+            android:alpha="0.4" />
     </LinearLayout>
 
+    <!-- ── Medicine card ──────────────────────────────────────── -->
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         app:cardCornerRadius="16dp"
-        app:cardElevation="0dp"
+        app:cardElevation="2dp"
         app:cardBackgroundColor="@color/white">
 
         <LinearLayout
@@ -42,18 +47,22 @@
             android:orientation="horizontal"
             android:padding="16dp">
 
+            <!-- Med type icon (tinted jungle green) -->
             <ImageView
                 android:id="@+id/iv_med_type_icon"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:src="@drawable/pill_24dp_icon" />
+                android:src="@drawable/pill_24dp_icon"
+                app:tint="@color/junglegreen" />
 
+            <!-- Name + detail -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="12dp"
                 android:layout_weight="1"
                 android:orientation="vertical">
+
                 <TextView
                     android:id="@+id/tv_med_name"
                     android:layout_width="wrap_content"
@@ -62,6 +71,7 @@
                     android:text="Panadol"
                     android:textColor="@color/Ebony"
                     android:textSize="16sp" />
+
                 <TextView
                     android:id="@+id/tv_med_detail"
                     android:layout_width="wrap_content"
@@ -71,6 +81,18 @@
                     android:textColor="@color/StateGray"
                     android:textSize="13sp" />
             </LinearLayout>
+
+            <!-- Edit time button -->
+            <ImageView
+                android:id="@+id/btn_edit_time"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:padding="4dp"
+                android:src="@drawable/ic_clock"
+                app:tint="@color/junglegreen"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Edit time" />
+
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 </LinearLayout>

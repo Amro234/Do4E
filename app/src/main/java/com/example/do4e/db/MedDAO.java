@@ -27,8 +27,9 @@ public interface MedDAO {
     // ── Read operations ───────────────────────────────────────
 
     /** All meds — used by my_medicines screen */
+
     @Transaction
-    @Query("SELECT * FROM meds ORDER BY hour ASC, minute ASC")
+    @Query("SELECT * FROM meds ORDER BY hour ASC, minute ASC, name ASC")
     List<MedEntity> getAllMeds();
 
     /** Single med by ID — used for edit/delete flows */
@@ -43,15 +44,16 @@ public interface MedDAO {
 
     /** Continuous meds only — for reminder rescheduling */
     @Transaction
-    @Query("SELECT * FROM meds WHERE isContinuous = 1 ORDER BY hour ASC, minute ASC")
+    @Query("SELECT * FROM meds WHERE isContinuous = 1 ORDER BY hour ASC, minute ASC, name ASC")
     List<MedEntity> getContinuousMeds();
 
     /** Active (non-expired) meds — durationDays not yet reached */
     @Transaction
-    @Query("SELECT * FROM meds WHERE isContinuous = 1 OR daysTaken < durationDays ORDER BY hour ASC, minute ASC")
+    @Query("SELECT * FROM meds WHERE isContinuous = 1 OR daysTaken < durationDays ORDER BY hour ASC, minute ASC, name ASC")
     List<MedEntity> getActiveMeds();
 
-    @Query("SELECT * FROM meds WHERE (:today >= startDate) AND (isContinuous = 1 OR daysTaken < durationDays) ORDER BY hour ASC, minute ASC")
+    /** Active meds for today */
+    @Query("SELECT * FROM meds WHERE (:today >= startDate) AND (isContinuous = 1 OR daysTaken < durationDays) ORDER BY hour ASC, minute ASC, name ASC")
     List<MedEntity> getActiveMedsForToday(long today);
 
     /** Increment daysTaken by 1 when user logs a dose */

@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginTop="16dp"
     android:layout_marginHorizontal="16dp"
     android:layout_marginBottom="16dp"
     android:background="@drawable/bg_medicine_card"
@@ -15,39 +16,59 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/tv_med_name"
+        <!-- Container for Icon + Name -->
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
-            android:fontFamily="@font/manrope_bold"
-            android:textColor="@color/Ebony"
-            android:textSize="18sp" />
+            android:layout_toStartOf="@id/tv_med_status"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/iv_med_type"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_marginEnd="10dp"
+                android:src="@drawable/pill_24dp_icon"
+                app:tint="@color/junglegreen" />
+
+            <TextView
+                android:id="@+id/tv_med_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/manrope_bold"
+                android:textColor="@color/Ebony"
+                android:textSize="20sp" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/tv_med_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
             android:background="@drawable/bg_badge_upcoming"
             android:fontFamily="@font/manrope_semibold"
             android:paddingHorizontal="16dp"
             android:paddingVertical="4dp"
             android:textColor="@color/SkyBlue"
             android:textSize="12sp" />
+
     </RelativeLayout>
 
     <!-- Time row -->
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="12dp"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
         <ImageView
-            android:layout_width="16dp"
-            android:layout_height="16dp"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
             android:src="@drawable/ic_clock"
             app:tint="@color/StateGray" />
 
@@ -56,9 +77,28 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:fontFamily="@font/manrope_medium"
+            android:fontFamily="@font/manrope_bold"
+            android:textColor="@color/Fiord"
+            android:textSize="14sp" />
+
+        <!-- Bullet separator -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="8dp"
+            android:text="•"
             android:textColor="@color/StateGray"
             android:textSize="14sp" />
+
+        <!-- Start date with day name -->
+        <TextView
+            android:id="@+id/tv_start_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/manrope_medium"
+            android:textColor="@color/StateGray"
+            android:textSize="12sp" />
+
     </LinearLayout>
 
     <!-- Course progress labels -->

@@ -29,6 +29,8 @@ public class med_alarm extends AppCompatActivity {
     private int notifId = -1;
     private MedEntity med;
 
+    private MediaPlayer alarmPlayer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,6 +67,8 @@ public class med_alarm extends AppCompatActivity {
 
         // ── Load medicine from DB then populate UI ────────────────────────
         loadMedicineAndPopulateUI();
+        settingsPref.playAlarmSound(this, player -> alarmPlayer = player);
+
 
         // ── Button wiring ─────────────────────────────────────────────────
         findViewById(R.id.btn_log_taken).setOnClickListener(v -> handleLogTaken());
@@ -166,15 +170,18 @@ public class med_alarm extends AppCompatActivity {
             return;
         }
 
+        // ✅ Read snooze duration from Settings instead of hardcoded 10
+        int snoozeMinutes = settingsPref.getSnoozeMinutes(this);
+
         Calendar snooze = Calendar.getInstance();
-        snooze.add(Calendar.MINUTE, 10);
+        snooze.add(Calendar.MINUTE, snoozeMinutes);
 
         MedEntity snoozeMed = new MedEntity();
-        snoozeMed.id_meds = med.id_meds;
-        snoozeMed.name = med.name;
-        snoozeMed.time = med.time;
-        snoozeMed.hour = snooze.get(Calendar.HOUR_OF_DAY);
-        snoozeMed.minute = snooze.get(Calendar.MINUTE);
+        snoozeMed.id_meds  = med.id_meds;
+        snoozeMed.name     = med.name;
+        snoozeMed.time     = med.time;
+        snoozeMed.hour     = snooze.get(Calendar.HOUR_OF_DAY);
+        snoozeMed.minute   = snooze.get(Calendar.MINUTE);
         snoozeMed.startDate = snooze.getTimeInMillis();
 
         ReminderScheduler.schedule(this, snoozeMed);
@@ -196,8 +203,16 @@ public class med_alarm extends AppCompatActivity {
     // Helpers
     // ─────────────────────────────────────────────────────────────────────────
 
+
     private void finishAndDismiss() {
         NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        if (alarmPlayer != null) {
+            try {
+                if (alarmPlayer.isPlaying()) alarmPlayer.stop();
+                alarmPlayer.release();
+            } catch (Exception ignored) {}
+            alarmPlayer = null;
+        }
         if (nm != null)
             nm.cancel(notifId);
         finish();

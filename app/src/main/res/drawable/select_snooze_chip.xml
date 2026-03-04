@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    selector_snooze_chip.xml
+    Background for each snooze RadioButton.
+    Selected  → filled purple pill shape
+    Unselected → outlined pill shape
+-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Selected state -->
+    <item android:state_checked="true">
+        <shape android:shape="rectangle">
+            <corners android:radius="20dp" />
+            <solid android:color="#6200EE" />
+            <stroke android:width="1.5dp" android:color="#6200EE" />
+        </shape>
+    </item>
+
+    <!-- Normal / unselected state -->
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="20dp" />
+            <solid android:color="@android:color/transparent" />
+            <stroke android:width="1.5dp" android:color="#CCCCCC" />
+        </shape>
+    </item>
+
+</selector>

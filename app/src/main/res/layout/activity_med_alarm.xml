@@ -29,8 +29,10 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:contentDescription="Close"
+                android:background="@drawable/close_bg"
                 android:padding="8dp"
-                android:src="@drawable/baseline_arrow_back_24" />
+                android:src="@drawable/close_24dp_icon" />
+
 
             <!-- LIVE REMINDER label (centered) -->
             <LinearLayout

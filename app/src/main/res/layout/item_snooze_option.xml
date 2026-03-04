@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    item_snooze_option.xml
+    A single RadioButton used for snooze duration choices (5 min, 10 min …).
+    Inflated programmatically and added to rg_snooze in Settings.java.
+-->
+<RadioButton xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="4dp"
+    android:layout_marginBottom="4dp"
+    android:paddingStart="6dp"
+    android:paddingEnd="10dp"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp"
+    android:textSize="13sp"
+    android:textColor="@color/black"
+    android:background="@drawable/snooze_24dp_icon"
+    android:button="@null" />

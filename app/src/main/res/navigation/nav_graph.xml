@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    nav_graph.xml  (UPDATED)
+    Changes from original:
+      • plan_id fragment replaced with Settings fragment (id=Settings)
+-->
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -62,9 +67,11 @@
         android:label="Schedule"
         tools:layout="@layout/fragment_schedule" />
 
+    <!-- ✅ NEW — Settings replaces the old plan_id/Profile fragment -->
     <fragment
-        android:id="@+id/plan_id"
-        android:name="com.example.do4e.ui.home.Home"
-        android:label="Profile" />
+        android:id="@+id/Settings"
+        android:name="com.example.do4e.ui.settings.Settings"
+        android:label="Settings"
+        tools:layout="@layout/fragment_settings" />
 
 </navigation>

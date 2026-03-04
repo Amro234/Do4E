@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    item_audio_track.xml
+    A single row in the music or voice track list.
+
+    Structure:
+      [○ RadioButton]  [Track Name]  [▶ Preview button]
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingTop="6dp"
+    android:paddingBottom="6dp"
+    android:paddingStart="4dp"
+    android:paddingEnd="4dp">
+
+    <!-- Radio selector -->
+    <RadioButton
+        android:id="@+id/rb_track"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp" />
+
+    <!-- Track display name -->
+    <TextView
+        android:id="@+id/tv_track_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:textSize="14sp"
+        android:textColor="@color/black"
+        android:maxLines="2" />
+
+    <!-- Preview (play) button -->
+    <ImageButton
+        android:id="@+id/ib_track_preview"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:src="@android:drawable/ic_media_play"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Preview this track"
+        android:padding="4dp" />
+
+</LinearLayout>

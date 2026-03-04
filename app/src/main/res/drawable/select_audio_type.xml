@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    selector_audio_type.xml
+    Background for the Music / Voice selector cards.
+    The actual selection state is driven by the RadioButton child,
+    but we still use a pressed state here for visual feedback.
+-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:state_pressed="true">
+        <shape android:shape="rectangle">
+            <corners android:radius="12dp" />
+            <solid android:color="#EDE7F6" />
+            <stroke android:width="2dp" android:color="#6200EE" />
+        </shape>
+    </item>
+
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="12dp" />
+            <solid android:color="#F5F5F5" />
+            <stroke android:width="1dp" android:color="#E0E0E0" />
+        </shape>
+    </item>
+
+</selector>

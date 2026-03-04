@@ -18,6 +18,9 @@ import com.example.do4e.db.AppDataBase;
 import com.example.do4e.db.MedEntity;
 import com.example.do4e.reminder.ReminderScheduler;
 
+import com.example.do4e.ui.settings.settingsPref;
+import android.media.MediaPlayer;
+
 import java.util.Calendar;
 
 public class med_alarm extends AppCompatActivity {

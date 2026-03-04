@@ -21,9 +21,9 @@
         />
 
     <item
-        android:id="@+id/plan_id"
-        android:title="@string/profile"
-        android:icon="@drawable/person_ic"
+        android:id="@+id/Settings"
+        android:title="@string/Settings"
+        android:icon="@drawable/settings_24dp_icon"
         />
 
 

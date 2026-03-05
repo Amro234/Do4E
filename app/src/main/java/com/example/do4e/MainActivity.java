@@ -16,6 +16,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.example.do4e.core.utility.ClickSoundHelper;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -72,6 +73,12 @@ public class MainActivity extends AppCompatActivity {
 
             BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
             NavigationUI.setupWithNavController(bottomNav, navController);
+
+            // Play click sound when bottom navigation items are pressed
+            bottomNav.setOnItemSelectedListener(item -> {
+                ClickSoundHelper.get(MainActivity.this).playClick();
+                return NavigationUI.onNavDestinationSelected(item, navController);
+            });
 
             // Hide bottom nav on the Add Medicine screen
             navController.addOnDestinationChangedListener((controller, destination, arguments) -> {

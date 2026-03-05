@@ -81,70 +81,44 @@
                     android:textColor="#666666"
                     android:layout_marginBottom="10dp" />
 
-                <RadioGroup
-                    android:id="@+id/rg_audio_type"
+                <LinearLayout
+                    android:id="@+id/ll_audio_type"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:layout_marginBottom="20dp">
 
                     <!-- Music option -->
-                    <LinearLayout
+                    <CheckBox
+                        android:id="@+id/cb_audio_music"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:orientation="vertical"
+                        android:text="  🔔  Ringtone"
+                        android:fontFamily="@font/manrope_regular"
+                        android:textSize="13sp"
                         android:gravity="center"
+                        android:buttonTint="@color/junglegreen"
                         android:background="@drawable/select_audio_type"
-                        android:padding="12dp"
-                        android:layout_marginEnd="8dp">
-
-                        <ImageView
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
-                            android:src="@android:drawable/ic_lock_silent_mode_off"
-                            android:layout_marginBottom="6dp"
-                            app:tint="@color/junglegreen"/>
-
-                        <RadioButton
-                            android:id="@+id/rb_audio_music"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Ringtone"
-                            android:fontFamily="@font/manrope_regular"
-                            android:textSize="13sp"
-                            android:gravity="center" />
-                    </LinearLayout>
+                        android:padding="14dp"
+                        android:layout_marginEnd="8dp" />
 
                     <!-- Voice option -->
-                    <LinearLayout
+                    <CheckBox
+                        android:id="@+id/cb_audio_voice"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:orientation="vertical"
+                        android:text="  🎙  Voice Message"
+                        android:fontFamily="@font/manrope_regular"
+                        android:textSize="13sp"
                         android:gravity="center"
+                        android:buttonTint="@color/junglegreen"
                         android:background="@drawable/select_audio_type"
-                        android:padding="12dp"
-                        android:layout_marginStart="8dp">
+                        android:padding="14dp"
+                        android:layout_marginStart="8dp" />
 
-                        <ImageView
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
-                            android:src="@android:drawable/ic_btn_speak_now"
-                            android:layout_marginBottom="6dp"
-                            app:tint="@color/junglegreen"/>
-
-                        <RadioButton
-                            android:id="@+id/rb_audio_voice"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Voice Message"
-                            android:fontFamily="@font/manrope_regular"
-                            android:textSize="13sp"
-                            android:gravity="center" />
-                    </LinearLayout>
-
-                </RadioGroup>
+                </LinearLayout>
 
                 <!-- Divider -->
                 <View
@@ -153,7 +127,7 @@
                     android:background="#E0E0E0"
                     android:layout_marginBottom="16dp" />
 
-                <!-- ── Music Tracks List (shown when Music is selected) ─ -->
+                <!-- ── Ringtone Dropdown (shown when Ringtone is selected) ─ -->
                 <LinearLayout
                     android:id="@+id/ll_music_tracks"
                     android:layout_width="match_parent"
@@ -170,28 +144,29 @@
                         android:textColor="#666666"
                         android:layout_marginBottom="10dp" />
 
-                    <!-- Preview stop button (hidden until preview starts) -->
-                    <ImageButton
-                        android:id="@+id/ib_preview_stop"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:src="@android:drawable/ic_media_pause"
-                        android:background="@android:color/transparent"
-                        android:layout_gravity="end"
-                        android:visibility="gone"
-                        android:layout_marginBottom="8dp"
-                        android:contentDescription="Stop preview" />
-
-                    <!-- Populated in code -->
-                    <RadioGroup
-                        android:id="@+id/rg_music_tracks"
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical" />
+                        app:boxCornerRadiusTopStart="12dp"
+                        app:boxCornerRadiusTopEnd="12dp"
+                        app:boxCornerRadiusBottomStart="12dp"
+                        app:boxCornerRadiusBottomEnd="12dp"
+                        app:boxStrokeColor="@color/junglegreen"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/spinner_music_tracks"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="none"
+                            android:fontFamily="@font/manrope_semibold"
+                            android:textSize="14sp"
+                            android:textColor="@color/black" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
                 </LinearLayout>
 
-                <!-- ── Voice Tracks List (shown when Voice is selected) ─ -->
+                <!-- ── Voice Dropdown (shown when Voice is selected) ─ -->
                 <LinearLayout
                     android:id="@+id/ll_voice_tracks"
                     android:layout_width="match_parent"
@@ -203,16 +178,30 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Choose a voice message"
+                        android:fontFamily="@font/manrope_regular"
                         android:textSize="14sp"
                         android:textColor="#666666"
                         android:layout_marginBottom="10dp" />
 
-                    <!-- Populated in code -->
-                    <RadioGroup
-                        android:id="@+id/rg_voice_tracks"
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical" />
+                        app:boxCornerRadiusTopStart="12dp"
+                        app:boxCornerRadiusTopEnd="12dp"
+                        app:boxCornerRadiusBottomStart="12dp"
+                        app:boxCornerRadiusBottomEnd="12dp"
+                        app:boxStrokeColor="@color/junglegreen"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/spinner_voice_tracks"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="none"
+                            android:fontFamily="@font/manrope_semibold"
+                            android:textSize="14sp"
+                            android:textColor="@color/black" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
                 </LinearLayout>
 
@@ -222,19 +211,12 @@
         <!-- ══════════════════════════════════════════════════════════════ -->
         <!-- CARD 2 — Snooze Time                                         -->
         <!-- ══════════════════════════════════════════════════════════════ -->
-        <com.google.android.material.card.MaterialCardView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="3dp"
-            app:strokeWidth="0dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="20dp">
+            android:orientation="vertical"
+            android:padding="20dp"
+            android:layout_marginBottom="24dp">
 
                 <!-- Section header -->
                 <LinearLayout
@@ -283,15 +265,27 @@
                     android:background="#E0E0E0"
                     android:layout_marginBottom="16dp" />
 
-                <!-- Snooze radio options — populated in code -->
-                <RadioGroup
-                    android:id="@+id/rg_snooze"
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal" />
+                    app:boxCornerRadiusTopStart="12dp"
+                    app:boxCornerRadiusTopEnd="12dp"
+                    app:boxCornerRadiusBottomStart="12dp"
+                    app:boxCornerRadiusBottomEnd="12dp"
+                    app:boxStrokeColor="@color/junglegreen"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/spinner_snooze"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="none"
+                        android:fontFamily="@font/manrope_semibold"
+                        android:textSize="14sp"
+                        android:textColor="@color/black" />
+                </com.google.android.material.textfield.TextInputLayout>
 
             </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
 
         <!-- ══════════════════════════════════════════════════════════════ -->
         <!-- Save button                                                   -->

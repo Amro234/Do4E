@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.widget.Button;
 
+import com.example.do4e.core.utility.ClickSoundHelper;
 import com.example.do4e.R;
 
 public class onboarding_main extends AppCompatActivity {
@@ -46,6 +47,7 @@ public class onboarding_main extends AppCompatActivity {
 
         Button startBtn = findViewById(R.id.start_btn);
         startBtn.setOnClickListener(v -> {
+            ClickSoundHelper.get(this).playClick();
             Intent intent = new Intent(onboarding_main.this, onboard_nav.class);
             startActivity(intent);
             overridePendingTransition(R.anim.slide_in_up, R.anim.stay);

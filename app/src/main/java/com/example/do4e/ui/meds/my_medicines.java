@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.example.do4e.core.utility.ClickSoundHelper;
 import com.example.do4e.R;
 import com.example.do4e.db.AppDataBase;
 import com.example.do4e.db.MedEntity;
@@ -70,23 +71,37 @@ public class my_medicines extends Fragment {
         }
 
         view.findViewById(R.id.btn_back)
-                .setOnClickListener(v -> NavHostFragment.findNavController(this).popBackStack());
+                .setOnClickListener(ClickSoundHelper.get(requireContext()).wrap(
+                        v -> NavHostFragment.findNavController(this).popBackStack()));
 
         fabAdd = view.findViewById(R.id.fab_add);
         fabAdd.setVisibility(View.VISIBLE);
         fabAdd.setOnClickListener(
-                v -> NavHostFragment.findNavController(this)
-                        .navigate(R.id.action_my_medicines_to_add_meds));
+                ClickSoundHelper.get(requireContext()).wrap(
+                        v -> NavHostFragment.findNavController(this)
+                                .navigate(R.id.action_my_medicines_to_add_meds)));
 
         tabToday = view.findViewById(R.id.tab_today);
         tabDaily = view.findViewById(R.id.tab_daily);
         tabWeekly = view.findViewById(R.id.tab_weekly);
         tabMonthly = view.findViewById(R.id.tab_monthly);
 
-        tabToday.setOnClickListener(v -> viewPager.setCurrentItem(0, true));
-        tabDaily.setOnClickListener(v -> viewPager.setCurrentItem(1, true));
-        tabWeekly.setOnClickListener(v -> viewPager.setCurrentItem(2, true));
-        tabMonthly.setOnClickListener(v -> viewPager.setCurrentItem(3, true));
+        tabToday.setOnClickListener(v -> {
+            ClickSoundHelper.get(requireContext()).playClick();
+            viewPager.setCurrentItem(0, true);
+        });
+        tabDaily.setOnClickListener(v -> {
+            ClickSoundHelper.get(requireContext()).playClick();
+            viewPager.setCurrentItem(1, true);
+        });
+        tabWeekly.setOnClickListener(v -> {
+            ClickSoundHelper.get(requireContext()).playClick();
+            viewPager.setCurrentItem(2, true);
+        });
+        tabMonthly.setOnClickListener(v -> {
+            ClickSoundHelper.get(requireContext()).playClick();
+            viewPager.setCurrentItem(3, true);
+        });
 
         viewPager = view.findViewById(R.id.view_pager);
         viewPager.setAdapter(new TabPagerAdapter());
@@ -404,6 +419,7 @@ public class my_medicines extends Fragment {
             ((TextView) view.findViewById(R.id.tv_med_detail_card)).setText(detail);
 
             view.findViewById(R.id.btn_confirm_delete).setOnClickListener(v -> {
+                com.example.do4e.core.utility.ClickSoundHelper.get(requireContext()).playClick();
                 AppDataBase db = AppDataBase.getInstance(requireContext());
                 new Thread(() -> {
                     ReminderScheduler.cancelAlarm(requireContext(), med.name, med.time);
@@ -418,7 +434,10 @@ public class my_medicines extends Fragment {
                 }).start();
             });
 
-            view.findViewById(R.id.btn_cancel_delete).setOnClickListener(v -> dismiss());
+            view.findViewById(R.id.btn_cancel_delete).setOnClickListener(v -> {
+                com.example.do4e.core.utility.ClickSoundHelper.get(requireContext()).playClick();
+                dismiss();
+            });
         }
     }
 
@@ -518,7 +537,10 @@ public class my_medicines extends Fragment {
             }
 
             void bind(String tab, OnAddListener listener) {
-                btnAdd.setOnClickListener(v -> listener.onAdd());
+                btnAdd.setOnClickListener(v -> {
+                    com.example.do4e.core.utility.ClickSoundHelper.get(itemView.getContext()).playClick();
+                    listener.onAdd();
+                });
                 switch (tab) {
                     case "Daily":
                         title.setText(itemView.getContext().getString(R.string.Medicine_No_Daily));
@@ -623,12 +645,21 @@ public class my_medicines extends Fragment {
                 if (btnLogNow != null) {
                     boolean canLog = med.isContinuous || med.daysTaken < med.durationDays;
                     btnLogNow.setVisibility(canLog ? View.VISIBLE : View.GONE);
-                    btnLogNow.setOnClickListener(v -> ll.onLogNow(med));
+                    btnLogNow.setOnClickListener(v -> {
+                        com.example.do4e.core.utility.ClickSoundHelper.get(v.getContext()).playClick();
+                        ll.onLogNow(med);
+                    });
                 }
                 if (btnEdit != null)
-                    btnEdit.setOnClickListener(v -> el.onEdit(med));
+                    btnEdit.setOnClickListener(v -> {
+                        com.example.do4e.core.utility.ClickSoundHelper.get(v.getContext()).playClick();
+                        el.onEdit(med);
+                    });
                 if (btnDelete != null)
-                    btnDelete.setOnClickListener(v -> dl.onDelete(med));
+                    btnDelete.setOnClickListener(v -> {
+                        com.example.do4e.core.utility.ClickSoundHelper.get(v.getContext()).playClick();
+                        dl.onDelete(med);
+                    });
             }
         }
     }

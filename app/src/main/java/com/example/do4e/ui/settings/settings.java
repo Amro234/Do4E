@@ -6,59 +6,50 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.SeekBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.example.do4e.core.utility.ClickSoundHelper;
 import com.example.do4e.R;
 import com.google.android.material.button.MaterialButton;
-import com.google.android.material.card.MaterialCardView;
-import com.google.android.material.slider.Slider;
 
 /**
  * SettingsFragment
  *
  * Contains three sections:
- * 1. Audio Type selector — "Music" vs "Voice"
- * 2. Track / Voice picker — shows the relevant sub-list based on the type
- * 3. Snooze duration — NumberPicker (or Slider) to choose 5 / 10 / 15 / 20 / 30
- * min
+ * 1. Audio Type selector — "Ringtone" vs "Voice Message"
+ * 2. Track / Voice picker — Spinner dropdowns that auto-play on selection
+ * 3. Snooze duration — RadioButtons to choose 5 / 10 / 15 / 20 / 30 min
  *
  * All choices are persisted in SharedPreferences ("do4e_settings") so that
  * ReminderReceiver and med_alarm can read them at notification time.
- *
- * SharedPreferences keys (use SettingsPrefs constants from any class):
- * KEY_AUDIO_TYPE → "music" | "voice"
- * KEY_MUSIC_TRACK → resource-name string of the chosen music file
- * KEY_VOICE_TRACK → resource-name string of the chosen voice file
- * KEY_SNOOZE_MINUTES → int (5 / 10 / 15 / 20 / 30)
  */
 public class settings extends Fragment {
 
     // ── SharedPreferences ─────────────────────────────────────────────────
     public static final String PREFS_NAME = "do4e_settings";
-    public static final String KEY_AUDIO_TYPE = "audio_type";
+    public static final String KEY_AUDIO_MUSIC_ENABLED = "audio_music_enabled";
+    public static final String KEY_AUDIO_VOICE_ENABLED = "audio_voice_enabled";
+    public static final String KEY_AUDIO_TYPE = "audio_type"; // For migration
     public static final String KEY_MUSIC_TRACK = "music_track";
     public static final String KEY_VOICE_TRACK = "voice_track";
     public static final String KEY_SNOOZE_MINUTES = "snooze_minutes";
-
-    public static final String AUDIO_TYPE_MUSIC = "music";
-    public static final String AUDIO_TYPE_VOICE = "voice";
 
     // ── Default snooze ────────────────────────────────────────────────────
     public static final int DEFAULT_SNOOZE_MINUTES = 10;
 
     // ── Music tracks (add your raw/ resource names here) ────────────────
     // Each entry = { displayName, rawResourceName }
-    // Make sure you add matching files under res/raw/ in your project.
     private static final String[][] MUSIC_TRACKS = {
             { "blinke", "notification_sound_01" },
             { "Winkee", "notification_sound_02" },
@@ -78,16 +69,12 @@ public class settings extends Fragment {
     private static final int[] SNOOZE_OPTIONS = { 5, 10, 15, 20, 30 };
 
     // ── Views ─────────────────────────────────────────────────────────────
-    private RadioGroup rgAudioType;
-    private RadioButton rbMusic, rbVoice;
+    private CheckBox cbMusic, cbVoice;
     private LinearLayout llMusicTracks, llVoiceTracks;
-    private RadioGroup rgMusicTracks, rgVoiceTracks;
-    private RadioGroup rgSnooze;
-    private ImageButton ibPreviewStop;
+    private AutoCompleteTextView spinnerMusic, spinnerVoice, spinnerSnooze;
 
     // ── State ─────────────────────────────────────────────────────────────
     private MediaPlayer mediaPlayer;
-    private int previewingResId = -1;
 
     // ─────────────────────────────────────────────────────────────────────
     @Nullable
@@ -103,50 +90,55 @@ public class settings extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         // ── Wire top-level views ──────────────────────────────────────────
-        rgAudioType = view.findViewById(R.id.rg_audio_type);
-        rbMusic = view.findViewById(R.id.rb_audio_music);
-        rbVoice = view.findViewById(R.id.rb_audio_voice);
+        cbMusic = view.findViewById(R.id.cb_audio_music);
+        cbVoice = view.findViewById(R.id.cb_audio_voice);
         llMusicTracks = view.findViewById(R.id.ll_music_tracks);
         llVoiceTracks = view.findViewById(R.id.ll_voice_tracks);
-        rgMusicTracks = view.findViewById(R.id.rg_music_tracks);
-        rgVoiceTracks = view.findViewById(R.id.rg_voice_tracks);
-        rgSnooze = view.findViewById(R.id.rg_snooze);
-        ibPreviewStop = view.findViewById(R.id.ib_preview_stop);
+        spinnerMusic = view.findViewById(R.id.spinner_music_tracks);
+        spinnerVoice = view.findViewById(R.id.spinner_voice_tracks);
+        spinnerSnooze = view.findViewById(R.id.spinner_snooze);
 
-        // ── Populate dynamic track lists ──────────────────────────────────
-        populateMusicTracks();
-        populateVoiceTracks();
+        // ── Populate Spinners and Snooze ──────────────────────────────────
+        populateMusicSpinner();
+        populateVoiceSpinner();
         populateSnoozeOptions();
 
         // ── Restore saved preferences ─────────────────────────────────────
         restorePreferences();
 
-        // ── Listeners ─────────────────────────────────────────────────────
-        rgAudioType.setOnCheckedChangeListener((group, checkedId) -> {
-            if (checkedId == R.id.rb_audio_music) {
-                llMusicTracks.setVisibility(View.VISIBLE);
-                llVoiceTracks.setVisibility(View.GONE);
-                saveString(KEY_AUDIO_TYPE, AUDIO_TYPE_MUSIC);
+        // ── Audio-type toggle listener ────────────────────────────────────
+        cbMusic.setOnCheckedChangeListener((btn, isChecked) -> {
+            if (btn.isPressed())
+                ClickSoundHelper.get(requireContext()).playClick();
+            if (!isChecked && !cbVoice.isChecked()) {
+                cbMusic.setChecked(true); // Don't allow unchecking both
+                Toast.makeText(requireContext(), "Must select at least one audio type", Toast.LENGTH_SHORT).show();
             } else {
-                llMusicTracks.setVisibility(View.GONE);
-                llVoiceTracks.setVisibility(View.VISIBLE);
-                saveString(KEY_AUDIO_TYPE, AUDIO_TYPE_VOICE);
+                updateAudioVisibility();
+                stopPreview();
             }
-            stopPreview();
+        });
+        cbVoice.setOnCheckedChangeListener((btn, isChecked) -> {
+            if (btn.isPressed())
+                ClickSoundHelper.get(requireContext()).playClick();
+            if (!isChecked && !cbMusic.isChecked()) {
+                cbVoice.setChecked(true); // Don't allow unchecking both
+                Toast.makeText(requireContext(), "Must select at least one audio type", Toast.LENGTH_SHORT).show();
+            } else {
+                updateAudioVisibility();
+                stopPreview();
+            }
         });
 
-        if (ibPreviewStop != null) {
-            ibPreviewStop.setOnClickListener(v -> stopPreview());
-        }
-
-        // Save button
+        // ── Save button ───────────────────────────────────────────────────
         MaterialButton btnSave = view.findViewById(R.id.btn_settings_save);
         if (btnSave != null) {
-            btnSave.setOnClickListener(v -> {
-                saveAllSettings();
-                Toast.makeText(requireContext(),
-                        "Settings saved!", Toast.LENGTH_SHORT).show();
-            });
+            btnSave.setOnClickListener(
+                    ClickSoundHelper.get(requireContext()).wrap(v -> {
+                        saveAllSettings();
+                        Toast.makeText(requireContext(),
+                                "Settings saved!", Toast.LENGTH_SHORT).show();
+                    }));
         }
     }
 
@@ -154,70 +146,123 @@ public class settings extends Fragment {
     // Populate helpers
     // ─────────────────────────────────────────────────────────────────────
 
-    private void populateMusicTracks() {
-        LayoutInflater inflater = LayoutInflater.from(requireContext());
-        for (int i = 0; i < MUSIC_TRACKS.length; i++) {
-            String displayName = MUSIC_TRACKS[i][0];
-            String resourceName = MUSIC_TRACKS[i][1];
-
-            View row = inflater.inflate(R.layout.item_audio_track, rgMusicTracks, false);
-            RadioButton rb = row.findViewById(R.id.rb_track);
-            TextView tv = row.findViewById(R.id.tv_track_name);
-            ImageButton ib = row.findViewById(R.id.ib_track_preview);
-
-            rb.setId(View.generateViewId());
-            rb.setTag(resourceName);
-            tv.setText(displayName);
-
-            ib.setOnClickListener(v -> previewTrack(resourceName));
-            rb.setOnCheckedChangeListener((btn, checked) -> {
-                if (checked)
-                    saveString(KEY_MUSIC_TRACK, resourceName);
-            });
-
-            rgMusicTracks.addView(row);
-        }
+    private void updateAudioVisibility() {
+        llMusicTracks.setVisibility(cbMusic.isChecked() ? View.VISIBLE : View.GONE);
+        llVoiceTracks.setVisibility(cbVoice.isChecked() ? View.VISIBLE : View.GONE);
     }
 
-    private void populateVoiceTracks() {
-        LayoutInflater inflater = LayoutInflater.from(requireContext());
-        for (int i = 0; i < VOICE_TRACKS.length; i++) {
-            String displayName = VOICE_TRACKS[i][0];
-            String resourceName = VOICE_TRACKS[i][1];
-
-            View row = inflater.inflate(R.layout.item_audio_track, rgVoiceTracks, false);
-            RadioButton rb = row.findViewById(R.id.rb_track);
-            TextView tv = row.findViewById(R.id.tv_track_name);
-            ImageButton ib = row.findViewById(R.id.ib_track_preview);
-
-            rb.setId(View.generateViewId());
-            rb.setTag(resourceName);
-            tv.setText(displayName);
-
-            ib.setOnClickListener(v -> previewTrack(resourceName));
-            rb.setOnCheckedChangeListener((btn, checked) -> {
-                if (checked)
-                    saveString(KEY_VOICE_TRACK, resourceName);
-            });
-
-            rgVoiceTracks.addView(row);
+    private void populateMusicSpinner() {
+        String[] displayNames = new String[MUSIC_TRACKS.length];
+        for (int i = 0; i < MUSIC_TRACKS.length; i++) {
+            displayNames[i] = MUSIC_TRACKS[i][0];
         }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                requireContext(),
+                android.R.layout.simple_dropdown_item_1line,
+                displayNames) {
+            @Override
+            public android.widget.Filter getFilter() {
+                return new android.widget.Filter() {
+                    @Override
+                    protected FilterResults performFiltering(CharSequence constraint) {
+                        FilterResults filterResults = new FilterResults();
+                        filterResults.values = displayNames;
+                        filterResults.count = displayNames.length;
+                        return filterResults;
+                    }
+
+                    @Override
+                    protected void publishResults(CharSequence constraint, FilterResults results) {
+                        notifyDataSetChanged();
+                    }
+                };
+            }
+        };
+
+        spinnerMusic.setAdapter(adapter);
+
+        spinnerMusic.setOnItemClickListener((parent, view, position, id) -> {
+            String resourceName = MUSIC_TRACKS[position][1];
+            saveString(KEY_MUSIC_TRACK, resourceName);
+            previewTrack(resourceName);
+            ClickSoundHelper.get(requireContext()).playClick();
+        });
+    }
+
+    private void populateVoiceSpinner() {
+        String[] displayNames = new String[VOICE_TRACKS.length];
+        for (int i = 0; i < VOICE_TRACKS.length; i++) {
+            displayNames[i] = VOICE_TRACKS[i][0];
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                requireContext(),
+                android.R.layout.simple_dropdown_item_1line,
+                displayNames) {
+            @Override
+            public android.widget.Filter getFilter() {
+                return new android.widget.Filter() {
+                    @Override
+                    protected FilterResults performFiltering(CharSequence constraint) {
+                        FilterResults filterResults = new FilterResults();
+                        filterResults.values = displayNames;
+                        filterResults.count = displayNames.length;
+                        return filterResults;
+                    }
+
+                    @Override
+                    protected void publishResults(CharSequence constraint, FilterResults results) {
+                        notifyDataSetChanged();
+                    }
+                };
+            }
+        };
+
+        spinnerVoice.setAdapter(adapter);
+
+        spinnerVoice.setOnItemClickListener((parent, view, position, id) -> {
+            String resourceName = VOICE_TRACKS[position][1];
+            saveString(KEY_VOICE_TRACK, resourceName);
+            previewTrack(resourceName);
+            ClickSoundHelper.get(requireContext()).playClick();
+        });
     }
 
     private void populateSnoozeOptions() {
-        LayoutInflater inflater = LayoutInflater.from(requireContext());
-        for (int minutes : SNOOZE_OPTIONS) {
-            RadioButton rb = (RadioButton) inflater.inflate(
-                    R.layout.item_snooze_option, rgSnooze, false);
-            rb.setId(View.generateViewId());
-            rb.setText(minutes + " min");
-            rb.setTag(minutes);
-            rb.setOnCheckedChangeListener((btn, checked) -> {
-                if (checked)
-                    saveInt(KEY_SNOOZE_MINUTES, minutes);
-            });
-            rgSnooze.addView(rb);
+        String[] snoozeStrings = new String[SNOOZE_OPTIONS.length];
+        for (int i = 0; i < SNOOZE_OPTIONS.length; i++) {
+            snoozeStrings[i] = SNOOZE_OPTIONS[i] + " min";
         }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                requireContext(),
+                android.R.layout.simple_dropdown_item_1line,
+                snoozeStrings) {
+            @Override
+            public android.widget.Filter getFilter() {
+                return new android.widget.Filter() {
+                    @Override
+                    protected FilterResults performFiltering(CharSequence constraint) {
+                        FilterResults filterResults = new FilterResults();
+                        filterResults.values = snoozeStrings;
+                        filterResults.count = snoozeStrings.length;
+                        return filterResults;
+                    }
+
+                    @Override
+                    protected void publishResults(CharSequence constraint, FilterResults results) {
+                        notifyDataSetChanged();
+                    }
+                };
+            }
+        };
+
+        spinnerSnooze.setAdapter(adapter);
+
+        spinnerSnooze.setOnItemClickListener((parent, view, position, id) -> {
+            ClickSoundHelper.get(requireContext()).playClick();
+        });
     }
 
     // ─────────────────────────────────────────────────────────────────────
@@ -240,101 +285,88 @@ public class settings extends Fragment {
     private void restorePreferences() {
         SharedPreferences sp = prefs();
 
-        // Audio type
-        String audioType = sp.getString(KEY_AUDIO_TYPE, AUDIO_TYPE_MUSIC);
-        if (AUDIO_TYPE_VOICE.equals(audioType)) {
-            rbVoice.setChecked(true);
-            llMusicTracks.setVisibility(View.GONE);
-            llVoiceTracks.setVisibility(View.VISIBLE);
-        } else {
-            rbMusic.setChecked(true);
-            llMusicTracks.setVisibility(View.VISIBLE);
-            llVoiceTracks.setVisibility(View.GONE);
+        // Audio type migration / load
+        boolean hasMusic = sp.getBoolean(KEY_AUDIO_MUSIC_ENABLED, true);
+        boolean hasVoice = sp.getBoolean(KEY_AUDIO_VOICE_ENABLED, false);
+
+        if (sp.contains(KEY_AUDIO_TYPE)) {
+            String oldType = sp.getString(KEY_AUDIO_TYPE, "music");
+            hasMusic = "music".equals(oldType);
+            hasVoice = "voice".equals(oldType);
+            sp.edit().remove(KEY_AUDIO_TYPE)
+                    .putBoolean(KEY_AUDIO_MUSIC_ENABLED, hasMusic)
+                    .putBoolean(KEY_AUDIO_VOICE_ENABLED, hasVoice).apply();
         }
 
-        // Selected music track
-        String savedMusic = sp.getString(KEY_MUSIC_TRACK, "");
-        selectTrackInGroup(rgMusicTracks, savedMusic);
+        cbMusic.setChecked(hasMusic);
+        cbVoice.setChecked(hasVoice);
+        updateAudioVisibility();
 
-        // Selected voice track
+        // Selected music track → set spinner position
+        String savedMusic = sp.getString(KEY_MUSIC_TRACK, "");
+        selectSpinnerByResource(spinnerMusic, MUSIC_TRACKS, savedMusic);
+
+        // Selected voice track → set spinner position
         String savedVoice = sp.getString(KEY_VOICE_TRACK, "");
-        selectTrackInGroup(rgVoiceTracks, savedVoice);
+        selectSpinnerByResource(spinnerVoice, VOICE_TRACKS, savedVoice);
 
         // Snooze
         int savedSnooze = sp.getInt(KEY_SNOOZE_MINUTES, DEFAULT_SNOOZE_MINUTES);
-        selectSnoozeInGroup(savedSnooze);
+        selectSnoozeInSpinner(savedSnooze);
     }
 
-    private void selectTrackInGroup(RadioGroup group, String resourceName) {
-        for (int i = 0; i < group.getChildCount(); i++) {
-            View child = group.getChildAt(i);
-            // Each child is the inflated row; rb is inside it
-            RadioButton rb = child.findViewById(R.id.rb_track);
-            if (rb != null && resourceName.equals(rb.getTag())) {
-                rb.setChecked(true);
+    private void selectSpinnerByResource(AutoCompleteTextView spinner, String[][] tracks, String resourceName) {
+        for (int i = 0; i < tracks.length; i++) {
+            if (tracks[i][1].equals(resourceName)) {
+                spinner.setText(tracks[i][0], false);
                 return;
             }
         }
-        // Nothing matched — check first row by default
-        if (group.getChildCount() > 0) {
-            RadioButton first = group.getChildAt(0).findViewById(R.id.rb_track);
-            if (first != null)
-                first.setChecked(true);
-        }
+        // Default: first item
+        spinner.setText(tracks[0][0], false);
     }
 
-    private void selectSnoozeInGroup(int minutes) {
-        for (int i = 0; i < rgSnooze.getChildCount(); i++) {
-            RadioButton rb = (RadioButton) rgSnooze.getChildAt(i);
-            if (rb.getTag() != null && (int) rb.getTag() == minutes) {
-                rb.setChecked(true);
-                return;
-            }
-        }
-        // Default: 10 min
-        if (rgSnooze.getChildCount() > 1)
-            ((RadioButton) rgSnooze.getChildAt(1)).setChecked(true);
+    private void selectSnoozeInSpinner(int minutes) {
+        spinnerSnooze.setText(minutes + " min", false);
     }
 
     /** Persist everything at once (called by Save button). */
     private void saveAllSettings() {
-        // Audio type is already saved live; this is a safety flush
         SharedPreferences.Editor editor = prefs().edit();
 
         // Audio type
-        editor.putString(KEY_AUDIO_TYPE,
-                rbVoice.isChecked() ? AUDIO_TYPE_VOICE : AUDIO_TYPE_MUSIC);
+        editor.putBoolean(KEY_AUDIO_MUSIC_ENABLED, cbMusic.isChecked());
+        editor.putBoolean(KEY_AUDIO_VOICE_ENABLED, cbVoice.isChecked());
 
         // Music track
-        String musicTrack = getCheckedTrackTag(rgMusicTracks);
-        if (musicTrack != null)
-            editor.putString(KEY_MUSIC_TRACK, musicTrack);
-
-        // Voice track
-        String voiceTrack = getCheckedTrackTag(rgVoiceTracks);
-        if (voiceTrack != null)
-            editor.putString(KEY_VOICE_TRACK, voiceTrack);
-
-        // Snooze
-        for (int i = 0; i < rgSnooze.getChildCount(); i++) {
-            RadioButton rb = (RadioButton) rgSnooze.getChildAt(i);
-            if (rb.isChecked() && rb.getTag() != null) {
-                editor.putInt(KEY_SNOOZE_MINUTES, (int) rb.getTag());
+        String currentMusicText = spinnerMusic.getText().toString();
+        for (String[] track : MUSIC_TRACKS) {
+            if (track[0].equals(currentMusicText)) {
+                editor.putString(KEY_MUSIC_TRACK, track[1]);
                 break;
             }
         }
 
-        editor.apply();
-    }
-
-    @Nullable
-    private String getCheckedTrackTag(RadioGroup group) {
-        for (int i = 0; i < group.getChildCount(); i++) {
-            RadioButton rb = group.getChildAt(i).findViewById(R.id.rb_track);
-            if (rb != null && rb.isChecked())
-                return (String) rb.getTag();
+        // Voice track
+        String currentVoiceText = spinnerVoice.getText().toString();
+        for (String[] track : VOICE_TRACKS) {
+            if (track[0].equals(currentVoiceText)) {
+                editor.putString(KEY_VOICE_TRACK, track[1]);
+                break;
+            }
         }
-        return null;
+
+        // Snooze
+        String snoozeText = spinnerSnooze.getText().toString();
+        if (snoozeText.contains(" min")) {
+            try {
+                int minutes = Integer.parseInt(snoozeText.replace(" min", ""));
+                editor.putInt(KEY_SNOOZE_MINUTES, minutes);
+            } catch (Exception ignored) {
+            }
+        }
+
+        editor.apply();
     }
 
     // ─────────────────────────────────────────────────────────────────────
@@ -343,8 +375,7 @@ public class settings extends Fragment {
 
     /**
      * Plays a preview of the chosen track.
-     * 
-     * @param resourceName The name of the raw resource (without extension).
+     * Automatically runs when the user selects from the dropdown.
      */
     private void previewTrack(String resourceName) {
         stopPreview();
@@ -361,9 +392,6 @@ public class settings extends Fragment {
         try {
             mediaPlayer = MediaPlayer.create(requireContext(), resId);
             if (mediaPlayer != null) {
-                previewingResId = resId;
-                if (ibPreviewStop != null)
-                    ibPreviewStop.setVisibility(View.VISIBLE);
                 mediaPlayer.setOnCompletionListener(mp -> stopPreview());
                 mediaPlayer.start();
             }
@@ -383,9 +411,6 @@ public class settings extends Fragment {
             }
             mediaPlayer = null;
         }
-        previewingResId = -1;
-        if (ibPreviewStop != null)
-            ibPreviewStop.setVisibility(View.GONE);
     }
 
     // ─────────────────────────────────────────────────────────────────────

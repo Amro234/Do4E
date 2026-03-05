@@ -14,11 +14,11 @@ import android.util.Log;
  *
  * Usage example in med_alarm.java:
  *
- *   // Play the configured alarm sound
- *   SettingsPrefs.playAlarmSound(this, player -> this.alarmPlayer = player);
+ * // Play the configured alarm sound
+ * SettingsPrefs.playAlarmSound(this, player -> this.alarmPlayer = player);
  *
- *   // Get snooze duration
- *   int snoozeMinutes = SettingsPrefs.getSnoozeMinutes(this);
+ * // Get snooze duration
+ * int snoozeMinutes = SettingsPrefs.getSnoozeMinutes(this);
  */
 public class settingsPref {
 
@@ -30,37 +30,28 @@ public class settingsPref {
         return context.getSharedPreferences(settings.PREFS_NAME, Context.MODE_PRIVATE);
     }
 
-    /** Returns "music" or "voice". Default = "music". */
-    public static String getAudioType(Context context) {
-        return getPrefs(context).getString(
-                settings.KEY_AUDIO_TYPE, settings.AUDIO_TYPE_MUSIC);
-    }
-
-    /**
-     * Returns the raw resource name for the chosen music track.
-     * Default = first entry ("alarm_bells").
-     */
-    public static String getMusicTrack(Context context) {
-        return getPrefs(context).getString(settings.KEY_MUSIC_TRACK, "alarm_bells");
-    }
-
-    /**
-     * Returns the raw resource name for the chosen voice track.
-     * Default = first entry ("voice_time_to_take").
-     */
-    public static String getVoiceTrack(Context context) {
-        return getPrefs(context).getString(settings.KEY_VOICE_TRACK, "voice_time_to_take");
-    }
-
-    /**
-     * Returns the active track resource name based on the selected audio type.
-     * This is the single method ReminderReceiver / med_alarm should call.
-     */
-    public static String getActiveTrackName(Context context) {
-        if (settings.AUDIO_TYPE_VOICE.equals(getAudioType(context))) {
-            return getVoiceTrack(context);
+    public static boolean hasMusic(Context context) {
+        SharedPreferences prefs = getPrefs(context);
+        if (prefs.contains(settings.KEY_AUDIO_MUSIC_ENABLED)) {
+            return prefs.getBoolean(settings.KEY_AUDIO_MUSIC_ENABLED, true);
         }
-        return getMusicTrack(context);
+        return "music".equals(prefs.getString("audio_type", "music"));
+    }
+
+    public static boolean hasVoice(Context context) {
+        SharedPreferences prefs = getPrefs(context);
+        if (prefs.contains(settings.KEY_AUDIO_VOICE_ENABLED)) {
+            return prefs.getBoolean(settings.KEY_AUDIO_VOICE_ENABLED, false);
+        }
+        return "voice".equals(prefs.getString("audio_type", "music"));
+    }
+
+    public static String getMusicTrack(Context context) {
+        return getPrefs(context).getString(settings.KEY_MUSIC_TRACK, "notification_sound_01");
+    }
+
+    public static String getVoiceTrack(Context context) {
+        return getPrefs(context).getString(settings.KEY_VOICE_TRACK, "voice_female_02");
     }
 
     /** Returns the snooze duration in minutes. Default = 10. */
@@ -80,14 +71,14 @@ public class settingsPref {
      *                 the caller can hold a reference and call release() later.
      *                 Callback receives null if the resource was not found.
      */
-    public static void playAlarmSound(Context context, PlayerCallback callback) {
-        String trackName = getActiveTrackName(context);
+    public static void playSound(Context context, String trackName, PlayerCallback callback) {
         int resId = context.getResources().getIdentifier(
                 trackName, "raw", context.getPackageName());
 
         if (resId == 0) {
             Log.w(TAG, "Audio resource not found: " + trackName);
-            if (callback != null) callback.onPlayerReady(null);
+            if (callback != null)
+                callback.onPlayerReady(null);
             return;
         }
 
@@ -96,13 +87,16 @@ public class settingsPref {
             if (player != null) {
                 player.setLooping(false);
                 player.start();
-                if (callback != null) callback.onPlayerReady(player);
+                if (callback != null)
+                    callback.onPlayerReady(player);
             } else {
-                if (callback != null) callback.onPlayerReady(null);
+                if (callback != null)
+                    callback.onPlayerReady(null);
             }
         } catch (Exception e) {
             Log.e(TAG, "Failed to play alarm sound", e);
-            if (callback != null) callback.onPlayerReady(null);
+            if (callback != null)
+                callback.onPlayerReady(null);
         }
     }
 

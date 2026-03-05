@@ -18,6 +18,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.example.do4e.core.utility.ClickSoundHelper;
 import com.example.do4e.MainActivity;
 import com.example.do4e.R;
 
@@ -83,6 +84,7 @@ public class onboard_nav extends AppCompatActivity {
         });
 
         nxtBtn.setOnClickListener(v -> {
+            ClickSoundHelper.get(this).playClick();
             if (viewPager.getCurrentItem() < adapter.getItemCount() - 1) {
                 viewPager.setCurrentItem(viewPager.getCurrentItem() + 1);
             } else {
@@ -90,7 +92,10 @@ public class onboard_nav extends AppCompatActivity {
             }
         });
 
-        skipTxt.setOnClickListener(v -> navigateToHome());
+        skipTxt.setOnClickListener(v -> {
+            ClickSoundHelper.get(this).playClick();
+            navigateToHome();
+        });
     }
 
     private void setupIndicators() {

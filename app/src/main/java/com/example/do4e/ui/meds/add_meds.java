@@ -28,6 +28,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.example.do4e.core.utility.ClickSoundHelper;
 import com.example.do4e.R;
 import com.example.do4e.db.AppDataBase;
 import com.example.do4e.db.MedEntity;
@@ -77,6 +78,7 @@ public class add_meds extends Fragment {
                 + new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(new Date(selectedStartDate)) + ")");
 
         view.findViewById(R.id.date_selection_container).setOnClickListener(v -> {
+            ClickSoundHelper.get(requireContext()).playClick();
             MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker()
                     .setTitleText("Select Start Date")
                     .setSelection(selectedStartDate)
@@ -92,13 +94,15 @@ public class add_meds extends Fragment {
 
         // ── Back button ──────────────────────────────────────────────────────
         view.findViewById(R.id.btn_back)
-                .setOnClickListener(v -> NavHostFragment.findNavController(this).popBackStack());
+                .setOnClickListener(ClickSoundHelper.get(requireContext()).wrap(
+                        v -> NavHostFragment.findNavController(this).popBackStack()));
 
         // ── Time selection ───────────────────────────────────────────────────
         TextView tvHour = view.findViewById(R.id.tv_selected_hour);
         TextView tvMinute = view.findViewById(R.id.tv_selected_minute);
 
         View.OnClickListener timeListener = v -> {
+            ClickSoundHelper.get(requireContext()).playClick();
             new TimePickerDialog(requireContext(), (picker, h, m) -> {
                 selectedHour = h;
                 selectedMinute = m;
@@ -180,6 +184,7 @@ public class add_meds extends Fragment {
         MaterialButton btnSyringe = view.findViewById(R.id.btn_syringe);
 
         View.OnClickListener typeListener = v -> {
+            ClickSoundHelper.get(requireContext()).playClick();
             // Reset all to unselected style
             setTypeButtonUnselected(btnPill);
             setTypeButtonUnselected(btnSyrup);
@@ -203,6 +208,7 @@ public class add_meds extends Fragment {
         MaterialButton btnAfter = view.findViewById(R.id.btn_after_food);
 
         View.OnClickListener foodListener = v -> {
+            ClickSoundHelper.get(requireContext()).playClick();
             setTypeButtonUnselected(btnBefore);
             setTypeButtonUnselected(btnDuring);
             setTypeButtonUnselected(btnAfter);
@@ -225,11 +231,13 @@ public class add_meds extends Fragment {
         SwitchMaterial switchContinuous = view.findViewById(R.id.switch_continuous);
 
         view.findViewById(R.id.btn_days_plus).setOnClickListener(v -> {
+            ClickSoundHelper.get(requireContext()).playClick();
             daysCount++;
             tvDays.setText(String.valueOf(daysCount));
         });
 
         view.findViewById(R.id.btn_days_minus).setOnClickListener(v -> {
+            ClickSoundHelper.get(requireContext()).playClick();
             if (daysCount > 1) {
                 daysCount--;
                 tvDays.setText(String.valueOf(daysCount));
@@ -243,10 +251,12 @@ public class add_meds extends Fragment {
         });
 
         // ── Reset button ─────────────────────────────────────────────────────
-        view.findViewById(R.id.btn_reset).setOnClickListener(v -> resetForm(view));
+        view.findViewById(R.id.btn_reset).setOnClickListener(
+                ClickSoundHelper.get(requireContext()).wrap(v -> resetForm(view)));
 
         // ── Save button ──────────────────────────────────────────────────────
-        view.findViewById(R.id.btn_save).setOnClickListener(v -> saveMedicine(view));
+        view.findViewById(R.id.btn_save).setOnClickListener(
+                ClickSoundHelper.get(requireContext()).wrap(v -> saveMedicine(view)));
 
         // ── Load if Edit Mode ────────────────────────────────────────────────
         if (getArguments() != null) {
@@ -518,6 +528,7 @@ public class add_meds extends Fragment {
             subtitle.setText(span);
 
             view.findViewById(R.id.btn_back_to_home).setOnClickListener(v -> {
+                ClickSoundHelper.get(requireContext()).playClick();
                 dismiss();
                 if (navController != null) {
                     Bundle returnArgs = new Bundle();
@@ -527,6 +538,7 @@ public class add_meds extends Fragment {
             });
 
             view.findViewById(R.id.btn_view_schedule).setOnClickListener(v -> {
+                ClickSoundHelper.get(requireContext()).playClick();
                 dismiss();
                 if (navController != null)
                     navController.navigate(R.id.schedule);

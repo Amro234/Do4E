@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.example.do4e.core.utility.ClickSoundHelper;
 import com.example.do4e.R;
 import com.example.do4e.db.AppDataBase;
 
@@ -27,7 +28,8 @@ public class meds_no extends Fragment {
 
         // Wire "Add Medicine" button → navigate to add_meds using action
         view.findViewById(R.id.btn_add_medicine).setOnClickListener(
-                v -> NavHostFragment.findNavController(this).navigate(R.id.action_meds_no_to_add_meds));
+                ClickSoundHelper.get(requireContext()).wrap(
+                        v -> NavHostFragment.findNavController(this).navigate(R.id.action_meds_no_to_add_meds)));
     }
 
     @Override

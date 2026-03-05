@@ -13,13 +13,14 @@ import android.widget.TextView;
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.do4e.core.utility.ClickSoundHelper;
 import com.example.do4e.R;
 import com.example.do4e.db.AppDataBase;
 import com.example.do4e.db.MedEntity;
 import com.example.do4e.reminder.ReminderScheduler;
 
+import com.example.do4e.reminder.AlarmSoundService;
 import com.example.do4e.ui.settings.settingsPref;
-import android.media.MediaPlayer;
 
 import java.util.Calendar;
 
@@ -28,8 +29,6 @@ public class med_alarm extends AppCompatActivity {
     private int medId = -1;
     private int notifId = -1;
     private MedEntity med;
-
-    private MediaPlayer alarmPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,14 +66,12 @@ public class med_alarm extends AppCompatActivity {
 
         // ── Load medicine from DB then populate UI ────────────────────────
         loadMedicineAndPopulateUI();
-        settingsPref.playAlarmSound(this, player -> alarmPlayer = player);
-
 
         // ── Button wiring ─────────────────────────────────────────────────
-        findViewById(R.id.btn_log_taken).setOnClickListener(v -> handleLogTaken());
-        findViewById(R.id.btn_snooze).setOnClickListener(v -> handleSnooze());
-        findViewById(R.id.btn_details).setOnClickListener(v -> handleDetails());
-        findViewById(R.id.btn_skip).setOnClickListener(v -> handleSkip());
+        findViewById(R.id.btn_log_taken).setOnClickListener(ClickSoundHelper.get(this).wrap(v -> handleLogTaken()));
+        findViewById(R.id.btn_snooze).setOnClickListener(ClickSoundHelper.get(this).wrap(v -> handleSnooze()));
+        findViewById(R.id.btn_details).setOnClickListener(ClickSoundHelper.get(this).wrap(v -> handleDetails()));
+        findViewById(R.id.btn_skip).setOnClickListener(ClickSoundHelper.get(this).wrap(v -> handleSkip()));
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -177,11 +174,11 @@ public class med_alarm extends AppCompatActivity {
         snooze.add(Calendar.MINUTE, snoozeMinutes);
 
         MedEntity snoozeMed = new MedEntity();
-        snoozeMed.id_meds  = med.id_meds;
-        snoozeMed.name     = med.name;
-        snoozeMed.time     = med.time;
-        snoozeMed.hour     = snooze.get(Calendar.HOUR_OF_DAY);
-        snoozeMed.minute   = snooze.get(Calendar.MINUTE);
+        snoozeMed.id_meds = med.id_meds;
+        snoozeMed.name = med.name;
+        snoozeMed.time = med.time;
+        snoozeMed.hour = snooze.get(Calendar.HOUR_OF_DAY);
+        snoozeMed.minute = snooze.get(Calendar.MINUTE);
         snoozeMed.startDate = snooze.getTimeInMillis();
 
         ReminderScheduler.schedule(this, snoozeMed);
@@ -203,16 +200,12 @@ public class med_alarm extends AppCompatActivity {
     // Helpers
     // ─────────────────────────────────────────────────────────────────────────
 
-
     private void finishAndDismiss() {
+        Intent serviceIntent = new Intent(this, AlarmSoundService.class);
+        serviceIntent.setAction(AlarmSoundService.ACTION_STOP);
+        startService(serviceIntent);
+
         NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        if (alarmPlayer != null) {
-            try {
-                if (alarmPlayer.isPlaying()) alarmPlayer.stop();
-                alarmPlayer.release();
-            } catch (Exception ignored) {}
-            alarmPlayer = null;
-        }
         if (nm != null)
             nm.cancel(notifId);
         finish();

@@ -4,247 +4,237 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     android:background="@color/PolshiedWhite"
     android:fillViewport="true"
     tools:context=".ui.home.Home">
 
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="20dp">
+        android:layout_height="match_parent">
 
-        <!-- Next Dose Card -->
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <!-- Main Home Content -->
+        <LinearLayout
+            android:id="@+id/home_content_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_next_dose_card"
-            android:elevation="8dp"
-            android:padding="24dp">
+            android:orientation="vertical"
+            android:padding="20dp"
+            android:visibility="visible">
 
-            <TextView
-                android:id="@+id/tvNextDoseTime"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:drawablePadding="8dp"
-                android:fontFamily="sans-serif-medium"
-                android:text="09:00 AM"
-                android:textColor="@color/white"
-                android:textSize="14sp"
-                app:drawableStartCompat="@drawable/ic_clock"
-                app:drawableTint="@color/white"
-                app:layout_constraintBottom_toBottomOf="@+id/tvNextDoseLabel"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/tvNextDoseLabel" />
-
-            <TextView
-                android:id="@+id/tvMedName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:fontFamily="sans-serif-medium"
-                android:text="Lisinopril"
-                android:textColor="@color/white"
-                android:textSize="28sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvNextDoseLabel" />
-
-            <TextView
-                android:id="@+id/tvMedDosage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:fontFamily="sans-serif"
-                android:text="10mg • 1 Tablet"
-                android:textColor="#E0FFFFFF"
-                android:textSize="16sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvMedName" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnLogDose"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_next_dose_card"
+                android:elevation="8dp"
+                android:padding="24dp">
+
+                <TextView
+                    android:id="@+id/tvMedName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="Lisinopril"
+                    android:textColor="@color/white"
+                    android:textSize="28sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tvNextDoseTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:drawablePadding="8dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="09:00 AM"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    app:drawableStartCompat="@drawable/ic_clock"
+                    app:drawableTint="@color/white"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tvMedDosage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:fontFamily="sans-serif"
+                    android:text="10mg • 1 Tablet"
+                    android:textColor="#E0FFFFFF"
+                    android:textSize="16sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvMedName" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnLogDose"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_marginTop="24dp"
+                    android:backgroundTint="@color/white"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:text="Log Dose"
+                    android:textAllCaps="false"
+                    android:textColor="@color/junglegreen"
+                    android:textSize="18sp"
+                    app:cornerRadius="30dp"
+                    app:icon="@drawable/check_circle_24dp_icon"
+                    app:iconGravity="textStart"
+                    app:iconPadding="10dp"
+                    app:iconSize="24dp"
+                    app:iconTint="@color/junglegreen"
+                    app:layout_constraintTop_toBottomOf="@+id/tvMedDosage" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- Daily Progress Section -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:backgroundTint="@color/white"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                android:text="Log Dose"
-                android:textAllCaps="false"
-                android:textColor="@color/junglegreen"
-                android:textSize="18sp"
-                app:cornerRadius="30dp"
-                app:icon="@drawable/check_circle_24dp_icon"
-                app:iconGravity="textStart"
-                app:iconPadding="10dp"
-                app:iconSize="24dp"
-                app:iconTint="@color/junglegreen"
-                app:layout_constraintTop_toBottomOf="@+id/tvMedDosage" />
+                android:background="@drawable/bg_progress_card"
+                android:elevation="2dp"
+                android:padding="20dp">
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                <TextView
+                    android:id="@+id/tvDailyProgressLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-black"
+                    android:text="Daily Progress"
+                    android:textColor="@color/Ebony"
+                    android:textSize="16sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- Daily Progress Section -->
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:background="@drawable/bg_progress_card"
-            android:elevation="2dp"
-            android:padding="20dp">
+                <TextView
+                    android:id="@+id/tvProgressPercent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="50%"
+                    android:textColor="@color/junglegreen"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/tvDailyProgressLabel"
-                android:layout_width="wrap_content"
+                <ProgressBar
+                    android:id="@+id/pbCircleProgress"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:layout_marginTop="16dp"
+                    android:indeterminate="false"
+                    android:max="100"
+                    android:progress="50"
+                    android:progressDrawable="@drawable/circular_progress_bar"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvDailyProgressLabel" />
+
+                <LinearLayout
+                    android:id="@+id/llTakenText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    app:layout_constraintBottom_toBottomOf="@+id/pbCircleProgress"
+                    app:layout_constraintEnd_toEndOf="@+id/pbCircleProgress"
+                    app:layout_constraintStart_toStartOf="@+id/pbCircleProgress"
+                    app:layout_constraintTop_toTopOf="@+id/pbCircleProgress">
+
+                    <TextView
+                        android:id="@+id/tvProgressFraction"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-black"
+                        android:text="2/4"
+                        android:textColor="@color/Ebony"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif"
+                        android:text="TAKEN"
+                        android:textColor="@color/StateGray"
+                        android:textSize="10sp" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvMedStatusMsg"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:fontFamily="sans-serif"
+                    android:lineSpacingExtra="4dp"
+                    android:text="You have 2 doses\nremaining for today. Keep\nup the consistency!"
+                    android:textColor="@color/Fiord"
+                    android:textSize="13sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/pbCircleProgress"
+                    app:layout_constraintTop_toTopOf="@+id/pbCircleProgress" />
+
+                <LinearLayout
+                    android:id="@+id/llProgressSegments"
+                    android:layout_width="0dp"
+                    android:layout_height="8dp"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginEnd="10dp"
+                    android:orientation="horizontal"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/tvMedStatusMsg"
+                    app:layout_constraintTop_toBottomOf="@+id/tvMedStatusMsg">
+                    <!-- Segments added dynamically -->
+                </LinearLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- Today's Schedule Section -->
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-black"
-                android:text="Daily Progress"
-                android:textColor="@color/Ebony"
-                android:textSize="16sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/tvProgressPercent"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-medium"
-                android:text="50%"
-                android:textColor="@color/junglegreen"
-                android:textSize="16sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <ProgressBar
-                android:id="@+id/pbCircleProgress"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_marginTop="16dp"
-                android:indeterminate="false"
-                android:max="100"
-                android:progress="50"
-                android:progressDrawable="@drawable/circular_progress_bar"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvDailyProgressLabel" />
-
-            <LinearLayout
-                android:id="@+id/llTakenText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="vertical"
-                app:layout_constraintBottom_toBottomOf="@+id/pbCircleProgress"
-                app:layout_constraintEnd_toEndOf="@+id/pbCircleProgress"
-                app:layout_constraintStart_toStartOf="@+id/pbCircleProgress"
-                app:layout_constraintTop_toTopOf="@+id/pbCircleProgress">
+                android:layout_marginTop="32dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-black"
-                    android:text="2/4"
+                    android:text="Today’s Schedule"
                     android:textColor="@color/Ebony"
                     android:textSize="18sp" />
 
                 <TextView
+                    android:id="@+id/btnViewAll"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif"
-                    android:text="TAKEN"
-                    android:textColor="@color/StateGray"
-                    android:textSize="10sp" />
-            </LinearLayout>
+                    android:layout_alignParentEnd="true"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="View All"
+                    android:textColor="@color/junglegreen"
+                    android:textSize="14sp" />
+            </RelativeLayout>
 
-            <TextView
-                android:id="@+id/tvMedStatusMsg"
-                android:layout_width="0dp"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvTodaySchedule"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:fontFamily="sans-serif"
-                android:lineSpacingExtra="4dp"
-                android:text="You have 2 doses\nremaining for today. Keep\nup the consistency!"
-                android:textColor="@color/Fiord"
-                android:textSize="13sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/pbCircleProgress"
-                app:layout_constraintTop_toTopOf="@+id/pbCircleProgress" />
-
-            <LinearLayout
-                android:id="@+id/llProgressSegments"
-                android:layout_width="0dp"
-                android:layout_height="8dp"
                 android:layout_marginTop="12dp"
-                android:layout_marginEnd="10dp"
                 android:orientation="horizontal"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/tvMedStatusMsg"
-                app:layout_constraintTop_toBottomOf="@+id/tvMedStatusMsg">
+                android:paddingBottom="16dp"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/item_home_schedule" />
 
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="4dp"
-                    android:background="@drawable/bg_progress_segment_active" />
+        </LinearLayout>
 
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="4dp"
-                    android:background="@drawable/bg_progress_segment_active" />
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="4dp"
-                    android:background="@drawable/bg_progress_segment_inactive" />
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_progress_segment_inactive" />
-            </LinearLayout>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <!-- Today's Schedule Section -->
-        <RelativeLayout
+        <!-- Empty State Container -->
+        <ViewStub
+            android:id="@+id/vsEmptyState"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp">
+            android:layout_height="match_parent"
+            android:layout="@layout/medicine_no" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-black"
-                android:text="Today’s Schedule"
-                android:textColor="@color/Ebony"
-                android:textSize="18sp" />
-
-            <TextView
-                android:id="@+id/btnViewAll"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:fontFamily="sans-serif-medium"
-                android:text="View All"
-                android:textColor="@color/junglegreen"
-                android:textSize="14sp" />
-        </RelativeLayout>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvTodaySchedule"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:orientation="horizontal"
-            android:paddingBottom="16dp"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            tools:listitem="@layout/item_home_schedule" />
-
-    </LinearLayout>
+    </FrameLayout>
 
 </ScrollView>

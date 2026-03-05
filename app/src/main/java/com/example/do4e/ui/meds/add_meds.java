@@ -531,9 +531,7 @@ public class add_meds extends Fragment {
                 ClickSoundHelper.get(requireContext()).playClick();
                 dismiss();
                 if (navController != null) {
-                    Bundle returnArgs = new Bundle();
-                    returnArgs.putString("start_interval", requireArguments().getString("interval", "Daily"));
-                    navController.navigate(R.id.fav_id, returnArgs);
+                    navController.navigate(R.id.home_id);
                 }
             });
 

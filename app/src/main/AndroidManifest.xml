@@ -57,7 +57,7 @@
                excludeFromRecents – hide from the recents / task switcher
         -->
         <activity
-            android:name=".ui.notification.med_alarm"
+            android:name=".ui.notification.viewer.med_alarm"
             android:exported="false"
             android:showWhenLocked="true"
             android:turnScreenOn="true"

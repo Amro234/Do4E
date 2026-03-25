@@ -1,4 +1,4 @@
-package com.example.do4e.ui.meds;
+package com.example.do4e.ui.meds.viewer;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -26,7 +26,6 @@ public class meds_no extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Wire "Add Medicine" button → navigate to add_meds using action
         view.findViewById(R.id.btn_add_medicine).setOnClickListener(
                 ClickSoundHelper.get(requireContext()).wrap(
                         v -> NavHostFragment.findNavController(this).navigate(R.id.action_meds_no_to_add_meds)));
@@ -35,7 +34,6 @@ public class meds_no extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        // Check if medicines were added while we were away (e.g. user saved one)
         AppDataBase db = AppDataBase.getInstance(requireContext());
         new Thread(() -> {
             int count = db.medDAO().getAllMeds().size();

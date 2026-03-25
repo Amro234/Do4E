@@ -17,7 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
 import com.example.do4e.R;
-import com.example.do4e.ui.notification.med_alarm;
+import com.example.do4e.ui.notification.viewer.med_alarm;
 import com.example.do4e.ui.settings.settingsPref;
 
 public class AlarmSoundService extends Service {

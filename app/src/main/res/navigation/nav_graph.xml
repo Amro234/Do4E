@@ -2,7 +2,7 @@
 <!--
     nav_graph.xml  (UPDATED)
     Changes from original:
-      • plan_id fragment replaced with Settings fragment (id=Settings)
+      â€¢ plan_id fragment replaced with Settings fragment (id=Settings)
 -->
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -12,13 +12,13 @@
 
     <fragment
         android:id="@+id/home_id"
-        android:name="com.example.do4e.ui.home.Home"
+        android:name="com.example.do4e.ui.home.viewer.Home"
         android:label="Home"
         tools:layout="@layout/fragment_home" />
 
     <fragment
         android:id="@+id/fav_id"
-        android:name="com.example.do4e.ui.meds.my_medicines"
+        android:name="com.example.do4e.ui.meds.viewer.my_medicines"
         android:label="My Medicines"
         tools:layout="@layout/fragment_my_medicines">
         <argument
@@ -36,7 +36,7 @@
 
     <fragment
         android:id="@+id/add_meds"
-        android:name="com.example.do4e.ui.meds.add_meds"
+        android:name="com.example.do4e.ui.meds.viewer.add_meds"
         android:label="Add Medicine"
         tools:layout="@layout/fragment_add_meds">
         <argument
@@ -48,7 +48,7 @@
 
     <fragment
         android:id="@+id/meds_no"
-        android:name="com.example.do4e.ui.meds.meds_no"
+        android:name="com.example.do4e.ui.meds.viewer.meds_no"
         android:label="No Medicines"
         tools:layout="@layout/fragment_meds_no">
         <action
@@ -63,11 +63,11 @@
 
     <fragment
         android:id="@+id/schedule"
-        android:name="com.example.do4e.ui.Schedule.Schedule"
+        android:name="com.example.do4e.ui.Schedule.viewer.Schedule"
         android:label="Schedule"
         tools:layout="@layout/fragment_schedule" />
 
-    <!-- ✅ NEW — Settings replaces the old plan_id/Profile fragment -->
+    <!-- âœ… NEW â€” Settings replaces the old plan_id/Profile fragment -->
     <fragment
         android:id="@+id/Settings"
         android:name="com.example.do4e.ui.settings.settings"

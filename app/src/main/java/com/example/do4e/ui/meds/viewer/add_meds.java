@@ -167,6 +167,14 @@ public class add_meds extends Fragment implements AddMedsContract.View {
         }
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (presenter instanceof AddMedsPresenter) {
+            ((AddMedsPresenter) presenter).dispose();
+        }
+    }
+
     private void updateTimeUI(View view) {
         TextView tvHour = view.findViewById(R.id.tv_selected_hour);
         TextView tvMinute = view.findViewById(R.id.tv_selected_minute);

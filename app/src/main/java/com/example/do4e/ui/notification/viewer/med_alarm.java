@@ -118,4 +118,12 @@ public class med_alarm extends AppCompatActivity implements AlarmContract.View {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (presenter instanceof AlarmPresenter) {
+            ((AlarmPresenter) presenter).dispose();
+        }
+    }
 }

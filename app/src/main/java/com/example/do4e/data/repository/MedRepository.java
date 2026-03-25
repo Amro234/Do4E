@@ -7,21 +7,24 @@ import com.example.do4e.db.MedDAO;
 import com.example.do4e.db.MedEntity;
 
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
+import io.reactivex.rxjava3.core.Completable;
+import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+
+/**
+ * Central data source for medicine operations.
+ * All methods return cold RxJava streams that execute on Schedulers.io().
+ * Callers are responsible for observing on the main thread.
+ */
 public class MedRepository {
 
     private final MedDAO medDAO;
-    private final ExecutorService executor;
-
-    // Singleton instance
     private static MedRepository instance;
 
     private MedRepository(Context context) {
         AppDataBase db = AppDataBase.getInstance(context);
         this.medDAO = db.medDAO();
-        this.executor = Executors.newSingleThreadExecutor();
     }
 
     public static synchronized MedRepository getInstance(Context context) {
@@ -31,78 +34,52 @@ public class MedRepository {
         return instance;
     }
 
-    public interface RepositoryCallback<T> {
-        void onComplete(T result);
+    // ── Read Operations ──────────────────────────────────────────────
+
+    public Single<List<MedEntity>> getAllMedicines() {
+        return Single.fromCallable(medDAO::getAllMeds)
+                .subscribeOn(Schedulers.io());
     }
 
-    // --- Read Operations ---
-
-    public void getAllMedicines(RepositoryCallback<List<MedEntity>> callback) {
-        executor.execute(() -> {
-            List<MedEntity> meds = medDAO.getAllMeds();
-            callback.onComplete(meds);
-        });
+    public Single<MedEntity> getMedicineById(int id) {
+        return Single.fromCallable(() -> medDAO.getById(id))
+                .subscribeOn(Schedulers.io());
     }
 
-    public void getMedicineById(int id, RepositoryCallback<MedEntity> callback) {
-        executor.execute(() -> {
-            MedEntity med = medDAO.getById(id);
-            callback.onComplete(med);
-        });
+    public Single<List<MedEntity>> getActiveMedsForToday(long todayTimestamp) {
+        return Single.fromCallable(() -> medDAO.getActiveMedsForToday(todayTimestamp))
+                .subscribeOn(Schedulers.io());
     }
 
-    public void getActiveMedsForToday(long todayTimestamp, RepositoryCallback<List<MedEntity>> callback) {
-        executor.execute(() -> {
-            List<MedEntity> meds = medDAO.getActiveMedsForToday(todayTimestamp);
-            callback.onComplete(meds);
-        });
+    public Single<List<MedEntity>> getActiveMeds() {
+        return Single.fromCallable(medDAO::getActiveMeds)
+                .subscribeOn(Schedulers.io());
     }
 
-    public void getActiveMeds(RepositoryCallback<List<MedEntity>> callback) {
-        executor.execute(() -> {
-            List<MedEntity> meds = medDAO.getActiveMeds();
-            callback.onComplete(meds);
-        });
+    public Single<Integer> getMedCount() {
+        return Single.fromCallable(medDAO::getMedCount)
+                .subscribeOn(Schedulers.io());
     }
 
-    public void getMedCount(RepositoryCallback<Integer> callback) {
-        executor.execute(() -> {
-            int count = medDAO.getMedCount();
-            callback.onComplete(count);
-        });
+    // ── Write Operations ─────────────────────────────────────────────
+
+    public Single<Long> insertMedicine(MedEntity med) {
+        return Single.fromCallable(() -> medDAO.insert(med))
+                .subscribeOn(Schedulers.io());
     }
 
-    // --- Write Operations ---
-
-    public void insertMedicine(MedEntity med, RepositoryCallback<Long> callback) {
-        executor.execute(() -> {
-            long newId = medDAO.insert(med);
-            if (callback != null)
-                callback.onComplete(newId);
-        });
+    public Completable updateMedicine(MedEntity med) {
+        return Completable.fromAction(() -> medDAO.update(med))
+                .subscribeOn(Schedulers.io());
     }
 
-    public void updateMedicine(MedEntity med, Runnable onComplete) {
-        executor.execute(() -> {
-            medDAO.update(med);
-            if (onComplete != null)
-                onComplete.run();
-        });
+    public Completable deleteMedicine(MedEntity med) {
+        return Completable.fromAction(() -> medDAO.delete(med))
+                .subscribeOn(Schedulers.io());
     }
 
-    public void deleteMedicine(MedEntity med, Runnable onComplete) {
-        executor.execute(() -> {
-            medDAO.delete(med);
-            if (onComplete != null)
-                onComplete.run();
-        });
-    }
-
-    public void incrementDose(int id, Runnable onComplete) {
-        executor.execute(() -> {
-            medDAO.incrementDaysTaken(id);
-            if (onComplete != null)
-                onComplete.run();
-        });
+    public Completable incrementDose(int id) {
+        return Completable.fromAction(() -> medDAO.incrementDaysTaken(id))
+                .subscribeOn(Schedulers.io());
     }
 }

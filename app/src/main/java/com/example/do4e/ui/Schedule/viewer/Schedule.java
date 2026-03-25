@@ -55,6 +55,14 @@ public class Schedule extends Fragment implements ScheduleContract.View {
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (presenter instanceof SchedulePresenter) {
+            ((SchedulePresenter) presenter).dispose();
+        }
+    }
+
+    @Override
     public void showEmptyState() {
         medContainer.removeAllViews();
         emptyHint.setVisibility(View.VISIBLE);

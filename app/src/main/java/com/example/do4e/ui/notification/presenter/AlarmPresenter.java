@@ -1,8 +1,6 @@
 package com.example.do4e.ui.notification.presenter;
 
 import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
 
 import com.example.do4e.data.repository.MedRepository;
 import com.example.do4e.db.MedEntity;
@@ -11,12 +9,15 @@ import com.example.do4e.ui.settings.settingsPref;
 
 import java.util.Calendar;
 
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+
 public class AlarmPresenter implements AlarmContract.Presenter {
 
     private final AlarmContract.View view;
     private final MedRepository repository;
     private final Context context;
-    private final Handler mainHandler = new Handler(Looper.getMainLooper());
+    private final CompositeDisposable disposables = new CompositeDisposable();
 
     public AlarmPresenter(AlarmContract.View view, Context context) {
         this.view = view;
@@ -28,13 +29,15 @@ public class AlarmPresenter implements AlarmContract.Presenter {
     public void loadMedicine(int medId) {
         if (medId == -1) return;
 
-        repository.getMedicineById(medId, med -> {
-            mainHandler.post(() -> {
-                if (med != null) {
-                    view.displayMedicineDetails(med);
-                }
-            });
-        });
+        disposables.add(
+            repository.getMedicineById(medId)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(med -> {
+                    if (med != null) {
+                        view.displayMedicineDetails(med);
+                    }
+                }, throwable -> { /* med not found, alarm still shows */ })
+        );
     }
 
     @Override
@@ -44,9 +47,13 @@ public class AlarmPresenter implements AlarmContract.Presenter {
             return;
         }
 
-        repository.incrementDose(medId, () -> {
-            mainHandler.post(() -> view.finishAndDismissAlarm(notifId));
-        });
+        disposables.add(
+            repository.incrementDose(medId)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    () -> view.finishAndDismissAlarm(notifId),
+                    throwable -> view.finishAndDismissAlarm(notifId))
+        );
     }
 
     @Override
@@ -82,5 +89,9 @@ public class AlarmPresenter implements AlarmContract.Presenter {
     public void onDetailsClicked(int notifId) {
         view.navigateToHome();
         view.finishAndDismissAlarm(notifId);
+    }
+
+    public void dispose() {
+        disposables.clear();
     }
 }

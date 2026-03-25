@@ -68,6 +68,14 @@ public class Home extends Fragment implements HomeContract.View {
         presenter.loadData();
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (presenter instanceof HomePresenter) {
+            ((HomePresenter) presenter).dispose();
+        }
+    }
+
     private void setupRecyclerView() {
         rvTodaySchedule.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
         scheduleAdapter = new HomeScheduleAdapter(med -> presenter.onMedSelected(med));

@@ -1,8 +1,6 @@
 package com.example.do4e.ui.meds.presenter;
 
 import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
 
 import com.example.do4e.data.repository.MedRepository;
 import com.example.do4e.db.MedEntity;
@@ -10,12 +8,15 @@ import com.example.do4e.reminder.ReminderScheduler;
 
 import java.util.Locale;
 
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+
 public class AddMedsPresenter implements AddMedsContract.Presenter {
 
     private final AddMedsContract.View view;
     private final MedRepository repository;
     private final Context context;
-    private final Handler mainHandler = new Handler(Looper.getMainLooper());
+    private final CompositeDisposable disposables = new CompositeDisposable();
 
     public AddMedsPresenter(AddMedsContract.View view, Context context) {
         this.view = view;
@@ -26,17 +27,22 @@ public class AddMedsPresenter implements AddMedsContract.Presenter {
     @Override
     public void loadMedicine(int medId) {
         if (medId == -1) return;
-        repository.getMedicineById(medId, med -> {
-            mainHandler.post(() -> {
-                if (med != null) {
-                    view.populateForm(med);
-                }
-            });
-        });
+
+        disposables.add(
+            repository.getMedicineById(medId)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(med -> {
+                    if (med != null) {
+                        view.populateForm(med);
+                    }
+                }, throwable -> view.showErrorToast("Error loading medicine"))
+        );
     }
 
     @Override
-    public void saveMedicine(String name, String dosage, String notes, int hour, int minute, String interval, String frequency, int daysCount, boolean isContinuous, String medType, String instruction, long startDate, int existingMedId) {
+    public void saveMedicine(String name, String dosage, String notes, int hour, int minute,
+                             String interval, String frequency, int daysCount, boolean isContinuous,
+                             String medType, String instruction, long startDate, int existingMedId) {
         if (name == null || name.trim().isEmpty()) {
             view.showNameError("Medicine name is required");
             return;
@@ -50,7 +56,8 @@ public class AddMedsPresenter implements AddMedsContract.Presenter {
 
         int finalDays = isContinuous ? 0 : daysCount;
 
-        MedEntity med = new MedEntity(name.trim(), dosage.trim(), timeStr, hour, minute, interval, frequency, finalDays, isContinuous, medType, instruction, notes.trim());
+        MedEntity med = new MedEntity(name.trim(), dosage.trim(), timeStr, hour, minute,
+                interval, frequency, finalDays, isContinuous, medType, instruction, notes.trim());
         med.startDate = startDate;
 
         if (existingMedId != -1) {
@@ -58,24 +65,36 @@ public class AddMedsPresenter implements AddMedsContract.Presenter {
         }
 
         if (existingMedId == -1) {
-            repository.insertMedicine(med, newId -> {
-                med.id_meds = newId.intValue();
-                finishSave(med, name, timeStr, interval);
-            });
+            disposables.add(
+                repository.insertMedicine(med)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(newId -> {
+                        med.id_meds = newId.intValue();
+                        finishSave(med, name, timeStr, interval);
+                    }, throwable -> view.showErrorToast("Error saving: " + throwable.getMessage()))
+            );
         } else {
-            repository.updateMedicine(med, () -> {
-                finishSave(med, name, timeStr, interval);
-            });
+            disposables.add(
+                repository.updateMedicine(med)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                        () -> finishSave(med, name, timeStr, interval),
+                        throwable -> view.showErrorToast("Error updating: " + throwable.getMessage()))
+            );
         }
     }
 
     private void finishSave(MedEntity med, String name, String timeStr, String interval) {
         try {
             ReminderScheduler.schedule(context, med);
-            mainHandler.post(() -> view.showSuccessSheet(name, timeStr, interval));
+            view.showSuccessSheet(name, timeStr, interval);
         } catch (Exception e) {
             e.printStackTrace();
-            mainHandler.post(() -> view.showErrorToast("Error saving: " + e.getMessage()));
+            view.showErrorToast("Error saving: " + e.getMessage());
         }
+    }
+
+    public void dispose() {
+        disposables.clear();
     }
 }

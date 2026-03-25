@@ -1,8 +1,6 @@
 package com.example.do4e.ui.Schedule.presenter;
 
 import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
 
 import com.example.do4e.data.repository.MedRepository;
 import com.example.do4e.db.MedEntity;
@@ -14,11 +12,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+
 public class SchedulePresenter implements ScheduleContract.Presenter {
 
     private final ScheduleContract.View view;
     private final MedRepository repository;
-    private final Handler mainHandler = new Handler(Looper.getMainLooper());
+    private final CompositeDisposable disposables = new CompositeDisposable();
 
     public SchedulePresenter(ScheduleContract.View view, Context context) {
         this.view = view;
@@ -28,40 +29,42 @@ public class SchedulePresenter implements ScheduleContract.Presenter {
     @Override
     public void loadDailySchedule() {
         String dateStr = new SimpleDateFormat("EEEE, MMM d", Locale.getDefault()).format(new Date());
-        mainHandler.post(() -> view.showDate(dateStr));
+        view.showDate(dateStr);
 
-        repository.getActiveMeds(allActive -> {
-            Calendar cal = Calendar.getInstance();
-            cal.set(Calendar.HOUR_OF_DAY, 0);
-            cal.set(Calendar.MINUTE, 0);
-            cal.set(Calendar.SECOND, 0);
-            cal.set(Calendar.MILLISECOND, 0);
-            long todayLocal = cal.getTimeInMillis();
+        disposables.add(
+            repository.getActiveMeds()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(allActive -> {
+                    Calendar cal = Calendar.getInstance();
+                    cal.set(Calendar.HOUR_OF_DAY, 0);
+                    cal.set(Calendar.MINUTE, 0);
+                    cal.set(Calendar.SECOND, 0);
+                    cal.set(Calendar.MILLISECOND, 0);
+                    long todayLocal = cal.getTimeInMillis();
 
-            List<MedEntity> todaysMeds = new ArrayList<>();
-            for (MedEntity m : allActive) {
-                Calendar startCal = Calendar.getInstance();
-                startCal.setTimeInMillis(m.startDate);
-                startCal.set(Calendar.HOUR_OF_DAY, 0);
-                startCal.set(Calendar.MINUTE, 0);
-                startCal.set(Calendar.SECOND, 0);
-                startCal.set(Calendar.MILLISECOND, 0);
-                long startLocal = startCal.getTimeInMillis();
+                    List<MedEntity> todaysMeds = new ArrayList<>();
+                    for (MedEntity m : allActive) {
+                        Calendar startCal = Calendar.getInstance();
+                        startCal.setTimeInMillis(m.startDate);
+                        startCal.set(Calendar.HOUR_OF_DAY, 0);
+                        startCal.set(Calendar.MINUTE, 0);
+                        startCal.set(Calendar.SECOND, 0);
+                        startCal.set(Calendar.MILLISECOND, 0);
+                        long startLocal = startCal.getTimeInMillis();
 
-                if (todayLocal >= startLocal) {
-                    todaysMeds.add(m);
-                }
-            }
+                        if (todayLocal >= startLocal) {
+                            todaysMeds.add(m);
+                        }
+                    }
 
-            mainHandler.post(() -> {
-                if (todaysMeds.isEmpty()) {
-                    view.showEmptyState();
-                } else {
-                    view.hideEmptyState();
-                    view.showDailySchedule(todaysMeds);
-                }
-            });
-        });
+                    if (todaysMeds.isEmpty()) {
+                        view.showEmptyState();
+                    } else {
+                        view.hideEmptyState();
+                        view.showDailySchedule(todaysMeds);
+                    }
+                }, throwable -> view.showEmptyState())
+        );
     }
 
     @Override
@@ -74,8 +77,15 @@ public class SchedulePresenter implements ScheduleContract.Presenter {
         String amPm = hourOfDay >= 12 ? "PM" : "AM";
         med.time = String.format(Locale.getDefault(), "%02d:%02d %s", h12, minute, amPm);
 
-        repository.updateMedicine(med, () -> {
-            mainHandler.post(this::loadDailySchedule);
-        });
+        disposables.add(
+            repository.updateMedicine(med)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::loadDailySchedule,
+                    throwable -> { /* silent fail for time update */ })
+        );
+    }
+
+    public void dispose() {
+        disposables.clear();
     }
 }

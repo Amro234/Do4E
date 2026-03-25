@@ -110,6 +110,14 @@ public class my_medicines extends Fragment implements MyMedicinesContract.View {
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (presenter instanceof MyMedicinesPresenter) {
+            ((MyMedicinesPresenter) presenter).dispose();
+        }
+    }
+
+    @Override
     public void refreshTabs(List<MedEntity> todaysMeds, List<MedEntity> dailyMeds, List<MedEntity> weeklyMeds, List<MedEntity> monthlyMeds) {
         this.todaysMeds = todaysMeds;
         this.dailyMeds = dailyMeds;
@@ -215,6 +223,7 @@ public class my_medicines extends Fragment implements MyMedicinesContract.View {
     public static class DeleteSheet extends BottomSheetDialogFragment {
         private Runnable onConfirmed;
         private MedEntity med;
+        private final io.reactivex.rxjava3.disposables.CompositeDisposable disposables = new io.reactivex.rxjava3.disposables.CompositeDisposable();
 
         public static DeleteSheet newInstance(int medId) {
             DeleteSheet sheet = new DeleteSheet();
@@ -239,15 +248,15 @@ public class my_medicines extends Fragment implements MyMedicinesContract.View {
             int medId = getArguments().getInt("MED_ID");
             MedRepository repo = MedRepository.getInstance(requireContext());
 
-            repo.getMedicineById(medId, medResult -> {
-                if (isAdded() && getActivity() != null) {
-                    requireActivity().runOnUiThread(() -> {
+            disposables.add(
+                repo.getMedicineById(medId)
+                    .observeOn(io.reactivex.rxjava3.android.schedulers.AndroidSchedulers.mainThread())
+                    .subscribe(medResult -> {
                         this.med = medResult;
                         if (med == null) { dismiss(); return; }
                         setupSheetUI(view, repo);
-                    });
-                }
-            });
+                    }, throwable -> dismiss())
+            );
         }
 
         private void setupSheetUI(View view, MedRepository repo) {
@@ -269,20 +278,26 @@ public class my_medicines extends Fragment implements MyMedicinesContract.View {
             view.findViewById(R.id.btn_confirm_delete).setOnClickListener(v -> {
                 ClickSoundHelper.get(requireContext()).playClick();
                 ReminderScheduler.cancelAlarm(requireContext(), med.name, med.time);
-                repo.deleteMedicine(med, () -> {
-                    if (isAdded() && getActivity() != null) {
-                        requireActivity().runOnUiThread(() -> {
+                disposables.add(
+                    repo.deleteMedicine(med)
+                        .observeOn(io.reactivex.rxjava3.android.schedulers.AndroidSchedulers.mainThread())
+                        .subscribe(() -> {
                             dismiss();
                             if (onConfirmed != null) onConfirmed.run();
-                        });
-                    }
-                });
+                        }, throwable -> dismiss())
+                );
             });
 
             view.findViewById(R.id.btn_cancel_delete).setOnClickListener(v -> {
                 ClickSoundHelper.get(requireContext()).playClick();
                 dismiss();
             });
+        }
+
+        @Override
+        public void onDestroyView() {
+            super.onDestroyView();
+            disposables.clear();
         }
     }
 

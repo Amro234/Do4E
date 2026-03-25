@@ -2,8 +2,6 @@ package com.example.do4e.ui.home.presenter;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Handler;
-import android.os.Looper;
 
 import com.example.do4e.data.repository.MedRepository;
 import com.example.do4e.db.MedEntity;
@@ -14,17 +12,18 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+
 public class HomePresenter implements HomeContract.Presenter {
 
     private final HomeContract.View view;
     private final MedRepository repository;
     private final SharedPreferences trackingPrefs;
-    private final Handler mainHandler = new Handler(Looper.getMainLooper());
-    private Context context;
+    private final CompositeDisposable disposables = new CompositeDisposable();
 
     public HomePresenter(HomeContract.View view, Context context) {
         this.view = view;
-        this.context = context;
         this.repository = MedRepository.getInstance(context);
         this.trackingPrefs = context.getSharedPreferences("DailyTracking", Context.MODE_PRIVATE);
     }
@@ -33,27 +32,32 @@ public class HomePresenter implements HomeContract.Presenter {
     public void loadData() {
         long todayTimestamp = getEndOfDay(new Date().getTime());
 
-        repository.getActiveMedsForToday(todayTimestamp, meds -> {
-            mainHandler.post(() -> {
-                if (meds == null || meds.isEmpty()) {
-                    view.showEmptyState();
-                } else {
-                    view.showHomeState();
-                    processMedsAndDisplay(meds);
-                }
-            });
-        });
+        disposables.add(
+            repository.getActiveMedsForToday(todayTimestamp)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(meds -> {
+                    if (meds == null || meds.isEmpty()) {
+                        view.showEmptyState();
+                    } else {
+                        view.showHomeState();
+                        processMedsAndDisplay(meds);
+                    }
+                }, throwable -> view.showMessage("Error loading data"))
+        );
     }
 
     @Override
     public void onDoseLogged(MedEntity med, String todayKey) {
         trackingPrefs.edit().putBoolean(todayKey + "_" + med.id_meds, true).apply();
-        repository.incrementDose(med.id_meds, () -> {
-            mainHandler.post(() -> {
-                view.showMessage("Dose logged successfully!");
-                loadData();
-            });
-        });
+
+        disposables.add(
+            repository.incrementDose(med.id_meds)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(() -> {
+                    view.showMessage("Dose logged successfully!");
+                    loadData();
+                }, throwable -> view.showMessage("Error logging dose"))
+        );
     }
 
     @Override
@@ -62,6 +66,10 @@ public class HomePresenter implements HomeContract.Presenter {
         boolean isTaken = trackingPrefs.getBoolean(todayKey + "_" + med.id_meds, false);
         view.selectScheduleMed(med.id_meds);
         view.updateHeroCard(med, isTaken, todayKey);
+    }
+
+    public void dispose() {
+        disposables.clear();
     }
 
     private void processMedsAndDisplay(List<MedEntity> meds) {

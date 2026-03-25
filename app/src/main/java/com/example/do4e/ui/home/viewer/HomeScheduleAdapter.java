@@ -1,4 +1,4 @@
-package com.example.do4e.ui.home;
+package com.example.do4e.ui.home.viewer;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,7 +23,7 @@ public class HomeScheduleAdapter extends RecyclerView.Adapter<HomeScheduleAdapte
     }
 
     private List<MedEntity> meds = new ArrayList<>();
-    private String currentTime; // To determine which one is "NOW"
+    private String currentTime;
     private int selectedMedId = -1;
     private OnItemClickListener listener;
 
@@ -60,7 +60,6 @@ public class HomeScheduleAdapter extends RecyclerView.Adapter<HomeScheduleAdapte
         holder.tvSchedTime.setText(med.time);
         holder.tvSchedDose.setText(med.dosage);
 
-        // Icon based on type
         if ("Syrup".equalsIgnoreCase(med.medType)) {
             holder.ivMedIcon.setImageResource(R.drawable.serup_24dp_icon);
         } else if ("Syringe".equalsIgnoreCase(med.medType)) {
@@ -69,39 +68,26 @@ public class HomeScheduleAdapter extends RecyclerView.Adapter<HomeScheduleAdapte
             holder.ivMedIcon.setImageResource(R.drawable.pill_24dp_icon);
         }
 
-        // Check if this is the "NOW" med
         boolean isNow = med.time != null && med.time.equals(currentTime);
         boolean isSelected = med.id_meds == selectedMedId;
 
-        // Visual selection priority: Selected > NOW > Normal
         if (isSelected || (isNow && selectedMedId == -1)) {
             holder.itemView.setBackgroundResource(R.drawable.bg_schedule_card_active);
-            holder.vIconBg.setBackgroundTintList(
-                    ContextCompat.getColorStateList(holder.itemView.getContext(), R.color.junglegreen));
-            holder.ivMedIcon
-                    .setImageTintList(ContextCompat.getColorStateList(holder.itemView.getContext(), R.color.white));
+            holder.vIconBg.setBackgroundTintList(ContextCompat.getColorStateList(holder.itemView.getContext(), R.color.junglegreen));
+            holder.ivMedIcon.setImageTintList(ContextCompat.getColorStateList(holder.itemView.getContext(), R.color.white));
             holder.tvSchedTime.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.junglegreen));
-            // Only show NOW badge if it's actually now
             holder.tvNowBadge.setVisibility(isNow ? View.VISIBLE : View.GONE);
         } else {
             holder.itemView.setBackgroundResource(R.drawable.bg_schedule_card_normal);
-            holder.vIconBg.setBackgroundTintList(
-                    ContextCompat.getColorStateList(holder.itemView.getContext(), R.color.MintBg));
-            holder.ivMedIcon.setImageTintList(
-                    ContextCompat.getColorStateList(holder.itemView.getContext(), R.color.junglegreen));
+            holder.vIconBg.setBackgroundTintList(ContextCompat.getColorStateList(holder.itemView.getContext(), R.color.MintBg));
+            holder.ivMedIcon.setImageTintList(ContextCompat.getColorStateList(holder.itemView.getContext(), R.color.junglegreen));
             holder.tvSchedTime.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.StateGray));
             holder.tvNowBadge.setVisibility(View.GONE);
         }
 
         holder.itemView.setOnClickListener(v -> {
-            if (listener != null) {
-                listener.onItemClick(med);
-            }
+            if (listener != null) listener.onItemClick(med);
         });
-
-        // Status icon (if taken) - logic can be refined later if there's a "taken" flag
-        // For now, if daysTaken > 0 and it's daily, we might show it
-        // holder.ivStatusIcon.setVisibility(View.VISIBLE / GONE);
     }
 
     @Override

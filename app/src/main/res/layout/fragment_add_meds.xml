@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="@color/PolshiedWhite"
     android:fitsSystemWindows="true"
-    tools:context=".ui.meds.add_meds">
+    tools:context=".ui.meds.viewer.add_meds">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="0dp"
@@ -129,7 +129,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:fontFamily="@font/manrope_semibold"
-                android:text="Start Date"
+                android:text="@string/Strt_dte"
                 android:textColor="@color/junglegreen"
                 android:textSize="16sp" />
 
@@ -163,7 +163,7 @@
                         android:layout_marginStart="16dp"
                         android:layout_weight="1"
                         android:fontFamily="@font/manrope_medium"
-                        android:text="Today"
+                        android:text="@string/Today"
                         android:textColor="@color/junglegreen"
                         android:textSize="14sp" />
 
@@ -273,7 +273,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginHorizontal="16dp"
-                            android:text=":"
+                            android:text="@string/semi_col"
                             android:textColor="@color/LightGray"
                             android:textSize="32sp"
                             android:textStyle="bold" />
@@ -321,7 +321,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Daily"
+                    android:text="@string/Daily"
                     android:textAllCaps="false"
                     app:cornerRadius="24dp"
                     app:strokeWidth="0dp" />
@@ -332,7 +332,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Weekly"
+                    android:text="@string/Weekly"
                     android:textAllCaps="false"
                     app:strokeWidth="0dp" />
 
@@ -342,7 +342,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Monthly"
+                    android:text="@string/Monthly"
                     android:textAllCaps="false"
                     app:cornerRadius="24dp"
                     app:strokeWidth="0dp" />
@@ -354,7 +354,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:fontFamily="@font/manrope_medium"
-                android:text="Times per Day"
+                android:text="@string/times_per_day"
                 android:textColor="@color/Fiord"
                 android:textSize="14sp" />
 
@@ -373,7 +373,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="1 time"
+                    android:text="@string/one_time"
                     android:textAllCaps="false"
                     app:cornerRadius="24dp"
                     app:strokeWidth="0dp" />
@@ -384,7 +384,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="2 times"
+                    android:text="@string/two_times"
                     android:textAllCaps="false"
                     app:strokeWidth="0dp" />
 
@@ -394,7 +394,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="3 times"
+                    android:text="@string/three_times"
                     android:textAllCaps="false"
                     app:cornerRadius="24dp"
                     app:strokeWidth="0dp" />
@@ -455,7 +455,7 @@
                     android:insetTop="0dp"
                     android:insetBottom="0dp"
                     android:padding="0dp"
-                    android:text="−"
+                    android:text="@string/minus"
                     android:textColor="@color/junglegreen"
                     android:textSize="20sp"
                     app:cornerRadius="12dp"
@@ -500,7 +500,7 @@
                     android:insetTop="0dp"
                     android:insetBottom="0dp"
                     android:padding="0dp"
-                    android:text="+"
+                    android:text="@string/plus"
                     android:textColor="@color/white"
                     android:textSize="20sp"
                     app:backgroundTint="@color/junglegreen"

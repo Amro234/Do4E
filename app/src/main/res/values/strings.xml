@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Do4E</string>
-    <string name="extended_fab_label">ADD</string>
-    <string name="extended_fab_content_desc">Desc</string>
+    <string name="extended_fab_label" translatable="false">ADD</string>
+    <string name="extended_fab_content_desc" translatable="false">Desc</string>
 
     <!--    On boarding_main    -->
 
@@ -35,17 +35,29 @@
     <string name="Settings">Settings</string>
 
     <!--  Header Main  -->
-    <string name="welcome">Hello, Amro</string>
-    <string name="Sub_welcome"> You are doing great today! </string>
+    <string name="welcome" translatable="false">Hello, Amro</string>
+    <string name="Sub_welcome" translatable="false"> You are doing great today! </string>
 
 
     <!-- Add_meds FragGrande -->
 
     <string name="add_meds_title"> Add New Medicine</string>
-    <string name="general"> General info</string>
-    <string name="med_name"> Medicine Name (e.g Paracetamol )</string>
-    <string name="Dosage"> Dosage (e.g 500mg)</string>
-    <string name="schedule_freQ"> Schedule and Frequency </string>
+    <string name="general"> Medicine Info</string>
+    <string name="med_name"> Medicine Name </string>
+    <string name="Dosage"> Dosage </string>
+    <string name="Strt_dte"> Start Date </string>
+    <string name="semi_col"> : </string>
+    <string name="Today"> Today </string>
+    <string name="Daily"> Daily </string>
+    <string name="Weekly"> Weekly </string>
+    <string name="Monthly"> Monthly </string>
+    <string name="times_per_day"> Times per Day </string>
+    <string name="one_time"> 1 time </string>
+    <string name="two_times"> 2 times </string>
+    <string name="three_times"> 3 times </string>
+    <string name="minus"> − </string>
+    <string name="plus"> + </string>
+    <string name="schedule_freQ"> Schedule and Time </string>
     <string name="Duration">Duration</string>
     <string name="Number">1</string>
     <string name="Continuous_label">Continuous (no end date)</string>
@@ -77,8 +89,10 @@
     <string name="syringe">Syringe</string>
 
 
+
     <!--    Meds_No_frag   -->
     <string name="Medicine_No"> There Is No Medicines Yet !</string>
+    <string name="title_meds_No"> Add your first medicine to get started. </string>
     <string name="Medicine_No_Daily"> Good you do not have any medicines Daily </string>
     <string name="Medicine_No_Monthly"> Good you do not have any medicines monthly </string>
     <string name="Medicine_NO_Weekly"> Good you do not have any medicines weekly </string>
@@ -109,6 +123,13 @@
     <string name="ans_Days"> 7 </string>
     <string name="Tap_plus"> Tap + to add another medication </string>
     <string name="Save_Schedule"> Save Schedule </string>
+    <string name="no_medicines_scheduled"> No medicines scheduled for today </string>
+
+    <!-- Schedule_time_line  -->
+
+    <string name="Time_selected">Time</string>
+    <string name="medicine_name">Medicine</string>
+    <string name="Edit_time">Edit time</string>
 
 
     <!-- Notification On Success -->
@@ -129,6 +150,42 @@
     <string name="del_btn_confirm"> Delete Medicine </string>
     <string name="cancel_btn_confirm"> Cancel </string>
     <string name="safety_protocol"> DOAEY SAFETY PROTOCOL </string>
-    
+
+    <!-- MedAlarm_notification -->
+
+    <string name="close_btn">Close</string>
+    <string name="live_rm">LIVE REMINDER</string>
+    <string name="medicine_desc">Medicine type</string>
+    <string name="big_title">Time for your medication!</string>
+    <string name="medicine_photo" translatable="false">Medicine photo</string>
+    <string name="upcoming">UPCOMING DOSE</string>
+    <string name="timer">00:00 AM</string>
+    <string name="med_name_notification">Medicine Name</string>
+    <string name="DOSAGE_name">DOSAGE</string>
+    <string name="Dosage_desc" translatable="false">Dosage icon</string>
+    <string name="Tablet">1 Tablet</string>
+    <string name="before_food">Before Food</string>
+    <string name="instruction">INSTRUCTION</string>
+    <string name="instruction_icon" translatable="false">Instruction icon</string>
+    <string name="Log_as">Log as Taken</string>
+    <string name="snooze">Snooze</string>
+    <string name="details">Details</string>
+    <string name="skip_dose">Skip this dose</string>
+
+
+    <!-- Settings_Screen -->
+
+    <string name="settings_title">Settings</string>
+    <string name="Audio_manager">Audio Manager</string>
+    <string name="alert_sound">Alert Sound Type</string>
+    <string name="rington">Ringtone</string>
+    <string name="voice_message">Voice Message</string>
+    <string name="choose_ring">Choose a ringtone</string>
+    <string name="choose_voice">Choose a voice message</string>
+    <string name="Snooze_duration">Snooze Duration</string>
+    <string name="snooze_subtitle">How long to delay the reminder</string>
+    <string name="save_settings">Save Settings</string>
+
+
 
 </resources>

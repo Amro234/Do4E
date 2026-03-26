@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/PolshiedWhite"
-    tools:context=".ui.meds.meds_no">
+    tools:context=".ui.meds.viewer.meds_no">
 
     <!-- Centered empty state content -->
     <LinearLayout
@@ -45,7 +45,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:fontFamily="@font/manrope_regular"
-            android:text="Add your first medicine to get started."
+            android:text="@string/title_meds_No"
             android:textAlignment="center"
             android:textColor="@color/StateGray"
             android:textSize="14sp" />

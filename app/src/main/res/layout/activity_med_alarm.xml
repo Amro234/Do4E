@@ -28,7 +28,7 @@
                 android:id="@+id/btn_skip"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:contentDescription="Close"
+                android:contentDescription="@string/close_btn"
                 android:background="@drawable/close_bg"
                 android:padding="8dp"
                 android:src="@drawable/close_24dp_icon" />
@@ -53,7 +53,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/manrope_semibold"
                     android:letterSpacing="0.12"
-                    android:text="LIVE REMINDER"
+                    android:text="@string/live_rm"
                     android:textColor="#1A2B2A"
                     android:textSize="12sp" />
             </LinearLayout>
@@ -74,7 +74,7 @@
                 android:layout_width="66dp"
                 android:layout_height="66dp"
                 android:layout_gravity="center"
-                android:contentDescription="Medicine type"
+                android:contentDescription="@string/medicine_desc"
                 android:src="@drawable/live_reminder_icon" />
 
             <!-- Bell badge (top-right) -->
@@ -90,7 +90,7 @@
             android:gravity="center"
             android:paddingStart="32dp"
             android:paddingEnd="32dp"
-            android:text="Time for your medication!"
+            android:text="@string/big_title"
             android:textColor="#1A2B2A"
             android:textSize="26sp" />
 
@@ -110,7 +110,7 @@
                 android:id="@+id/iv_alarm_med_photo"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:contentDescription="Medicine photo"
+                android:contentDescription="@string/medicine_photo"
                 android:scaleType="centerCrop"
                 android:src="@drawable/pill1" />
         </androidx.cardview.widget.CardView>
@@ -144,7 +144,7 @@
                         android:layout_weight="1"
                         android:fontFamily="@font/manrope_semibold"
                         android:letterSpacing="0.10"
-                        android:text="UPCOMING DOSE"
+                        android:text="@string/upcoming"
                         android:textColor="#4CAF8A"
                         android:textSize="11sp" />
 
@@ -156,7 +156,7 @@
                         android:fontFamily="@font/manrope_bold"
                         android:paddingHorizontal="8dp"
                         android:paddingVertical="4dp"
-                        android:text="00:00 AM"
+                        android:text="@string/timer"
                         android:textColor="@color/junglegreen"
                         android:textSize="13sp" />
                 </LinearLayout>
@@ -168,7 +168,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:fontFamily="@font/manrope_extrabold"
-                    android:text="Medicine Name"
+                    android:text="@string/med_name_notification"
                     android:textColor="#1A2B2A"
                     android:textSize="20sp" />
 
@@ -208,9 +208,9 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/manrope_semibold"
                             android:letterSpacing="0.08"
-                            android:text="DOSAGE"
+                            android:text="@string/DOSAGE_name"
                             android:textColor="#9EAAA9"
-                            android:textSize="10sp" />
+                            android:textSize="11sp" />
 
                         <LinearLayout
                             android:layout_width="wrap_content"
@@ -223,7 +223,7 @@
                                 android:layout_width="16dp"
                                 android:layout_height="16dp"
                                 android:layout_marginEnd="4dp"
-                                android:contentDescription="Dosage icon"
+                                android:contentDescription="@string/Dosage_desc"
                                 android:src="@drawable/pill_24dp_icon" />
 
                             <TextView
@@ -231,7 +231,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/manrope_bold"
-                                android:text="1 Tablet"
+                                android:text="@string/Tablet"
                                 android:textColor="#1A2B2A"
                                 android:textSize="14sp" />
                         </LinearLayout>
@@ -251,7 +251,7 @@
                             android:fontFamily="@font/manrope_semibold"
                             android:gravity="end"
                             android:letterSpacing="0.08"
-                            android:text="INSTRUCTION"
+                            android:text="@string/instruction"
                             android:textColor="#9EAAA9"
                             android:textSize="10sp" />
 
@@ -268,7 +268,7 @@
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/manrope_bold"
                                 android:layout_marginEnd="4dp"
-                                android:text="Before Food"
+                                android:text="@string/before_food"
                                 android:textColor="#1A2B2A"
                                 android:textSize="14sp" />
 
@@ -276,7 +276,7 @@
                                 android:id="@+id/iv_alarm_instruction_icon"
                                 android:layout_width="16dp"
                                 android:layout_height="16dp"
-                                android:contentDescription="Instruction icon"
+                                android:contentDescription="@string/instruction_icon"
                                 android:src="@drawable/before_food_24dp_icon" />
                         </LinearLayout>
                     </LinearLayout>
@@ -293,7 +293,7 @@
             android:layout_marginTop="24dp"
             android:layout_marginEnd="20dp"
             android:fontFamily="@font/manrope_bold"
-            android:text="Log as Taken"
+            android:text="@string/Log_as"
             android:textSize="16sp"
             app:cornerRadius="28dp"
             app:icon="@drawable/check_circle_24dp_icon"
@@ -318,7 +318,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_weight="1"
                 android:fontFamily="@font/manrope_semibold"
-                android:text="Snooze"
+                android:text="@string/snooze"
                 android:textSize="14sp"
                 app:cornerRadius="24dp"
                 app:icon="@drawable/snooze_24dp_icon"
@@ -333,7 +333,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_weight="1"
                 android:fontFamily="@font/manrope_semibold"
-                android:text="Details"
+                android:text="@string/details"
                 android:textSize="14sp"
                 app:cornerRadius="24dp"
                 app:icon="@drawable/info_24dp_icon"
@@ -349,7 +349,7 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="20dp"
             android:fontFamily="@font/manrope_medium"
-            android:text="Skip this dose"
+            android:text="@string/skip_dose"
             android:textColor="#9EAAA9"
             android:textSize="13sp" />
 

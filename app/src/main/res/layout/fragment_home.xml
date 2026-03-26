@@ -7,7 +7,7 @@
     android:fitsSystemWindows="true"
     android:background="@color/PolshiedWhite"
     android:fillViewport="true"
-    tools:context=".ui.home.Home">
+    tools:context=".ui.home.viewer.Home">
 
     <FrameLayout
         android:layout_width="match_parent"

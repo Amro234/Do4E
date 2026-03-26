@@ -112,7 +112,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/manrope_bold"
-            android:text="COURSE PROGRESS"
+            android:text="@string/course_progress"
             android:textColor="@color/StateGray"
             android:textSize="10sp" />
 
@@ -180,7 +180,7 @@
                 android:backgroundTint="@color/junglegreen"
                 android:fontFamily="@font/manrope_bold"
                 android:paddingHorizontal="24dp"
-                android:text="Log Now"
+                android:text="@string/btn_log_now"
                 android:textAllCaps="false"
                 android:textColor="@color/white"
                 android:textSize="12sp"

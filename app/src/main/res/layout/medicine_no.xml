@@ -41,7 +41,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:fontFamily="@font/manrope_regular"
-            android:text="Add your first medicine to get started."
+            android:text="@string/title_meds_No"
             android:textAlignment="center"
             android:textColor="@color/StateGray"
             android:textSize="14sp" />

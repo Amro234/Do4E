@@ -65,7 +65,6 @@
         android:textColor="@android:color/white"
         android:textSize="18sp"
         app:cornerRadius="32dp"
-        app:icon="@drawable/arrow_forward_icon"
         app:iconGravity="textStart"
         app:iconPadding="12dp"
         app:iconTint="@android:color/white"

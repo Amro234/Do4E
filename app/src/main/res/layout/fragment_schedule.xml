@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:background="@color/PolshiedWhite"
-    tools:context=".ui.Schedule.Schedule">
+    tools:context=".ui.Schedule.viewer.Schedule">
 
     <LinearLayout
         android:id="@+id/header"
@@ -36,7 +36,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/manrope_bold"
-                android:text="Daily Schedule"
+                android:text="@string/Schedule_Title"
                 android:textColor="@color/Ebony"
                 android:textSize="20sp" />
 
@@ -45,7 +45,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/manrope_regular"
-                android:text="Monday, Oct 14"
+                android:text="@string/Schedule_Time"
                 android:textColor="@color/StateGray"
                 android:textSize="14sp" />
         </LinearLayout>
@@ -91,7 +91,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:fontFamily="@font/manrope_semibold"
-                    android:text="No medicines scheduled for today"
+                    android:text="@string/no_medicines_scheduled"
                     android:textColor="@color/StateGray"
                     android:textSize="15sp" />
             </LinearLayout>

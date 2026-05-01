@@ -85,6 +85,7 @@ public class my_medicines extends Fragment implements MyMedicinesContract.View {
         tabMonthly.setOnClickListener(v -> { ClickSoundHelper.get(requireContext()).playClick(); viewPager.setCurrentItem(3, true); });
 
         viewPager = view.findViewById(R.id.view_pager);
+        viewPager.setVisibility(View.INVISIBLE); // Hide until data loads to prevent empty-state flash
         viewPager.setAdapter(new TabPagerAdapter());
         viewPager.setOffscreenPageLimit(3);
 
@@ -128,6 +129,11 @@ public class my_medicines extends Fragment implements MyMedicinesContract.View {
         if (adapterDaily != null) adapterDaily.updateList(dailyMeds);
         if (adapterWeekly != null) adapterWeekly.updateList(weeklyMeds);
         if (adapterMonthly != null) adapterMonthly.updateList(monthlyMeds);
+
+        // Show the ViewPager now that real data has loaded (prevents empty-state flash)
+        if (viewPager != null && viewPager.getVisibility() != View.VISIBLE) {
+            viewPager.setVisibility(View.VISIBLE);
+        }
 
         updateFabVisibilityInternal();
     }

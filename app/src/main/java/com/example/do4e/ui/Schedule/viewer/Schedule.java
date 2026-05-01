@@ -25,6 +25,7 @@ public class Schedule extends Fragment implements ScheduleContract.View {
 
     private LinearLayout medContainer;
     private View emptyHint;
+    private View scrollContent;
     private TextView tvTodayDate;
     private ScheduleContract.Presenter presenter;
 
@@ -40,6 +41,10 @@ public class Schedule extends Fragment implements ScheduleContract.View {
         medContainer = view.findViewById(R.id.med_container);
         emptyHint = view.findViewById(R.id.empty_hint_container);
         tvTodayDate = view.findViewById(R.id.tv_today_date);
+
+        // Hide content area until data loads to prevent empty-state flash
+        scrollContent = view.findViewById(R.id.scroll_content);
+        if (scrollContent != null) scrollContent.setVisibility(View.INVISIBLE);
 
         presenter = new SchedulePresenter(this, requireContext());
 
@@ -66,6 +71,7 @@ public class Schedule extends Fragment implements ScheduleContract.View {
     public void showEmptyState() {
         medContainer.removeAllViews();
         emptyHint.setVisibility(View.VISIBLE);
+        if (scrollContent != null) scrollContent.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -84,6 +90,7 @@ public class Schedule extends Fragment implements ScheduleContract.View {
         for (MedEntity med : meds) {
             inflateMedRow(med);
         }
+        if (scrollContent != null) scrollContent.setVisibility(View.VISIBLE);
     }
 
     private void inflateMedRow(MedEntity med) {

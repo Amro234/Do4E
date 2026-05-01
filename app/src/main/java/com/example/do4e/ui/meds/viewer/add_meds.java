@@ -288,8 +288,28 @@ public class add_meds extends Fragment implements AddMedsContract.View {
             int ns = full.indexOf(medName), ne = ns + medName.length(); span.setSpan(new ForegroundColorSpan(teal), ns, ne, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE); span.setSpan(new StyleSpan(Typeface.BOLD), ns, ne, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             int ts = full.lastIndexOf(time), te = ts + time.length(); if (ts >= 0) { span.setSpan(new ForegroundColorSpan(teal), ts, te, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE); span.setSpan(new StyleSpan(Typeface.BOLD), ts, te, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE); }
             subtitle.setText(span);
-            view.findViewById(R.id.btn_back_to_home).setOnClickListener(v -> { ClickSoundHelper.get(requireContext()).playClick(); dismiss(); if (navController != null) navController.navigate(R.id.home_id); });
-            view.findViewById(R.id.btn_view_schedule).setOnClickListener(v -> { ClickSoundHelper.get(requireContext()).playClick(); dismiss(); if (navController != null) navController.navigate(R.id.schedule); });
+            // Use NavOptions to pop back to home_id so the back stack stays clean
+            // and bottom navigation items (especially Meds) continue to work.
+            view.findViewById(R.id.btn_back_to_home).setOnClickListener(v -> {
+                ClickSoundHelper.get(requireContext()).playClick();
+                dismiss();
+                if (navController != null) {
+                    androidx.navigation.NavOptions opts = new androidx.navigation.NavOptions.Builder()
+                            .setPopUpTo(R.id.home_id, true)
+                            .build();
+                    navController.navigate(R.id.home_id, null, opts);
+                }
+            });
+            view.findViewById(R.id.btn_view_schedule).setOnClickListener(v -> {
+                ClickSoundHelper.get(requireContext()).playClick();
+                dismiss();
+                if (navController != null) {
+                    androidx.navigation.NavOptions opts = new androidx.navigation.NavOptions.Builder()
+                            .setPopUpTo(R.id.home_id, false)
+                            .build();
+                    navController.navigate(R.id.schedule, null, opts);
+                }
+            });
         }
     }
 
